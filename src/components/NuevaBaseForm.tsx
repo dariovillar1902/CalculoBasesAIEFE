@@ -45,9 +45,11 @@ const NuevaBaseForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("baseshormigon", formData);
+      const response = await api.post("baseshormigon", formData);
+      const baseId = response.data.id;
+
       alert("¡Nueva base creada exitosamente!");
-      navigate("/"); // Redirigir a la página principal
+      navigate("/resultados", { state: { baseId } });
     } catch (error) {
       console.error("Error al crear la base:", error);
       alert("Error al crear la base.");
