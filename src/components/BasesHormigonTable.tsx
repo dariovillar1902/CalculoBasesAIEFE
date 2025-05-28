@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBasesHormigon } from "../store/slices/baseHormigonSlice";
-import { RootState, AppDispatch } from "../store";
-import { BaseHormigon } from "../types/BaseHormigon";
+import type { RootState, AppDispatch } from "../store";
+import type { BaseHormigon } from "../types/BaseHormigon";
 
 const BasesHormigonTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -48,16 +48,16 @@ const BasesHormigonTable: React.FC = () => {
                   {item.id}
                 </td>
                 <td className="px-4 py-2 border border-gray-300 text-black">
-                  {item.esfuerzoAxil}
+                  {item.esfuerzoAxil.valor}
                 </td>
                 <td className="px-4 py-2 border border-gray-300 text-black">
-                  {item.cargaAdmisible}
+                  {item.cargaAdmisible.valor}
                 </td>
                 <td className="px-4 py-2 border border-gray-300 text-black">
-                  {item.anchoColumnaX}
+                  {item.anchoColumnaX.valor}
                 </td>
                 <td className="px-4 py-2 border border-gray-300 text-black">
-                  {item.anchoColumnaY}
+                  {item.anchoColumnaY.valor}
                 </td>
               </tr>
             ))}

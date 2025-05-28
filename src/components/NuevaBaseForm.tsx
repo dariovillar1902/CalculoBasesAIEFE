@@ -1,28 +1,45 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import type { BaseHormigon } from "../types/BaseHormigon"; // Import the updated type
 
 const NuevaBaseForm: React.FC = () => {
   const navigate = useNavigate();
 
-  // Estado del formulario con todos los campos
-  const [formData, setFormData] = useState({
-    esfuerzoAxil: "",
-    cargaAdmisible: "",
-    porcentajeCargaD: "",
-    porcentajeCargaL: "",
-    anchoColumnaX: "",
-    anchoColumnaY: "",
-    pesoEspecificoSuelo: "",
-    nivelFundacion: "",
-    pesoEspecificoHormigon: "",
-    resistenciaCaracteristicaHormigon: "",
-    recubrimientoHormigon: "",
-    tensionFluenciaAcero: "",
-  });
+  // Estado inicial basado en BaseHormigon (sin ID)
+  const initialState: Omit<BaseHormigon, "id"> = {
+    esfuerzoAxil: { valor: 0, unidad: "kN", tipo: "fuerza" },
+    cargaAdmisible: { valor: 0, unidad: "kPa", tipo: "presion" },
+    porcentajeCargaD: { valor: 0, unidad: "%", tipo: "porcentaje" },
+    porcentajeCargaL: { valor: 0, unidad: "%", tipo: "porcentaje" },
+    anchoColumnaX: { valor: 0, unidad: "cm", tipo: "longitud" },
+    anchoColumnaY: { valor: 0, unidad: "cm", tipo: "longitud" },
+    pesoEspecificoSuelo: { valor: 0, unidad: "kN/m3", tipo: "densidad" },
+    nivelFundacion: { valor: 0, unidad: "cm", tipo: "longitud" },
+    pesoEspecificoHormigon: { valor: 0, unidad: "kN/m3", tipo: "densidad" },
+    resistenciaCaracteristicaHormigon: {
+      valor: 0,
+      unidad: "kPa",
+      tipo: "presion",
+    },
+    recubrimientoHormigon: { valor: 0, unidad: "cm", tipo: "longitud" },
+    tensionFluenciaAcero: { valor: 0, unidad: "kPa", tipo: "presion" },
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const [formData, setFormData] = useState(initialState);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: keyof BaseHormigon
+  ) => {
+    setFormData({
+      ...formData,
+      [key]: {
+        valor: parseFloat(e.target.value) || 0,
+        unidad: formData[key].unidad,
+        tipo: formData[key].tipo,
+      },
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,20 +54,18 @@ const NuevaBaseForm: React.FC = () => {
     }
   };
 
-  // Lista de unidades para cada campo
-  const units: Record<string, string> = {
-    cargaAdmisible: "kN/m²",
-    esfuerzoAxil: "kN",
-    porcentajeCargaD: "%",
-    porcentajeCargaL: "%",
-    anchoColumnaX: "cm",
-    anchoColumnaY: "cm",
-    pesoEspecificoSuelo: "kN/m²",
-    nivelFundacion: "cm",
-    pesoEspecificoHormigon: "kN/m²",
-    resistenciaCaracteristicaHormigon: "kN/m²",
-    recubrimientoHormigon: "cm",
-    tensionFluenciaAcero: "MPa",
+  const formatLabel = (key: string): string => {
+    return key
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
+  };
+
+  const unitOptions: Record<string, string[]> = {
+    fuerza: ["N", "kN"],
+    presion: ["Pa", "kPa", "MPa"],
+    porcentaje: ["%", "-"],
+    longitud: ["cm", "m"],
+    densidad: ["kN/m3", "N/m3"],
   };
 
   return (
@@ -60,43 +75,36 @@ const NuevaBaseForm: React.FC = () => {
           Crear Nueva Base
         </h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-          {/* Generar inputs con dropdowns de unidades */}
-          {[
-            ["Carga Admisible", "Esfuerzo Axil"],
-            ["% Carga D", "% Carga L"],
-            ["Ancho Columna X", "Ancho Columna Y"],
-            ["Peso Específico Suelo", "Nivel de Fundación"],
-            ["Peso Específico Hormigón", "Resistencia Característica Hormigón"],
-            ["Recubrimiento Hormigón", "Tensión Fluencia Acero"],
-          ].map(([campo1, campo2]) => (
-            <>
-              {[campo1, campo2].map((campo) => (
-                <div key={campo}>
-                  <label className="block text-gray-600">{campo}</label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="number"
-                      name={campo.toLowerCase().replace(/\s+/g, "")}
-                      value={
-                        formData[
-                          campo
-                            .toLowerCase()
-                            .replace(/\s+/g, "") as keyof typeof formData
-                        ]
-                      }
-                      onChange={handleChange}
-                      className="w-3/4 px-3 py-2 border rounded-lg bg-gray-100 text-black focus:ring-blue-500"
-                      required
-                    />
-                    <select className="w-1/4 px-2 py-2 border rounded-lg bg-gray-200 text-black">
-                      <option>
-                        {units[campo.toLowerCase().replace(/\s+/g, "")]}
-                      </option>
-                    </select>
-                  </div>
-                </div>
-              ))}
-            </>
+          {Object.entries(formData).map(([key, data]) => (
+            <div key={key}>
+              <label className="block text-gray-600">{formatLabel(key)}</label>
+              <div className="flex space-x-2">
+                <input
+                  type="number"
+                  name={key}
+                  value={data.valor !== 0 ? data.valor : undefined}
+                  onChange={(e) => handleChange(e, key as keyof BaseHormigon)}
+                  className="w-3/4 px-3 py-2 border rounded-lg bg-gray-100 text-black focus:ring-blue-500"
+                  required
+                />
+                <select
+                  className="w-1/4 px-2 py-2 border rounded-lg bg-gray-200 text-black"
+                  value={data.unidad}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [key]: { ...data, unidad: e.target.value },
+                    })
+                  }
+                >
+                  {unitOptions[data.tipo]?.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           ))}
 
           <div className="col-span-2">

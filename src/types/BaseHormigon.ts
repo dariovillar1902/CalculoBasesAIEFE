@@ -1,16 +1,19 @@
 export interface BaseHormigon {
   id: number;
-  esfuerzoAxil: number;
-  porcentajeCargaD: number;
-  porcentajeCargaL: number;
-  anchoColumnaX: number;
-  anchoColumnaY: number;
-  cargaAdmisible: number;
-  pesoEspecificoSuelo: number;
-  nivelFundacion: number;
-  factorSeguridad: number;
-  pesoEspecificoHormigon: number;
-  resistenciaCaracteristicaHormigon: number;
-  recubrimientoHormigon: number;
-  tensionFluenciaAcero: number;
+  esfuerzoAxil: { valor: number; unidad: string; tipo: string };
+  porcentajeCargaD: { valor: number; unidad: string; tipo: string };
+  porcentajeCargaL: { valor: number; unidad: string; tipo: string };
+  anchoColumnaX: { valor: number; unidad: string; tipo: string };
+  anchoColumnaY: { valor: number; unidad: string; tipo: string };
+  cargaAdmisible: { valor: number; unidad: string; tipo: string };
+  pesoEspecificoSuelo: { valor: number; unidad: string; tipo: string };
+  nivelFundacion: { valor: number; unidad: string; tipo: string };
+  pesoEspecificoHormigon: { valor: number; unidad: string; tipo: string };
+  resistenciaCaracteristicaHormigon: {
+    valor: number;
+    unidad: string;
+    tipo: string;
+  };
+  recubrimientoHormigon: { valor: number; unidad: string; tipo: string };
+  tensionFluenciaAcero: { valor: number; unidad: string; tipo: string };
 }
