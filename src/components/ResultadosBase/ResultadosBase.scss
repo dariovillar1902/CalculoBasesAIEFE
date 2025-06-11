@@ -1,0 +1,135 @@
+// Styling for the container holding the formula
+.katex-container {
+  background-color: white;
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  display: inline-block;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  width: 80%;
+
+  .katex,
+  p,
+  h3,
+  pre {
+    color: black !important;
+  }
+}
+
+// Layout styles
+.resultados-base {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  background-color: #e2e8f0; // Light gray background
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #374151;
+    margin-bottom: 16px;
+  }
+
+  .progress-bar-container {
+    width: 75%;
+    background-color: #d1d5db;
+    border-radius: 8px;
+    height: 24px;
+    margin-bottom: 16px;
+
+    .progress-bar {
+      background-color: #2563eb;
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.3s ease-in-out;
+    }
+  }
+
+  .status-message {
+    margin-top: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .result-list {
+    width: 100%;
+    margin-top: 24px;
+
+    li {
+      padding: 16px;
+      border-radius: 8px;
+      background-color: white;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 12px;
+
+      h3 {
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      pre {
+        font-family: monospace;
+        background-color: #f3f4f6;
+        padding: 8px;
+        border-radius: 6px;
+      }
+    }
+  }
+
+  .dimensiones-container,
+  .verificacion-container,
+  .cuantia-container,
+  .punzonado-container,
+  .corte-container,
+  .armadura-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .dimensiones-title,
+  .verificacion-title,
+  .cuantia-title,
+  .punzonado-title,
+  .corte-title,
+  .armadura-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .dimensiones-item,
+  .verificacion-item,
+  .cuantia-item,
+  .punzonado-item,
+  .corte-item,
+  .armadura-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .dimensiones-item h3,
+  .verificacion-item h3,
+  .cuantia-item h3,
+  .punzonado-item h3,
+  .corte-item h3,
+  .armadura-item h3 {
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .dimensiones-item p,
+  .verificacion-item p,
+  .cuantia-item p,
+  .punzonado-item p,
+  .corte-item p,
+  .armadura-item p {
+    font-size: 16px;
+  }
+}

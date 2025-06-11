@@ -6,13 +6,13 @@ import {
 import api from "../../utils/api";
 import type { BaseHormigon } from "../../types/BaseHormigon";
 
-interface BaseHormigonState {
+interface BaseHormigonFormState {
   data: BaseHormigon[];
   loading: boolean;
   error: string | null;
 }
 
-const initialState: BaseHormigonState = {
+const initialState: BaseHormigonFormState = {
   data: [],
   loading: false,
   error: null,

@@ -14,10 +14,6 @@ const BasesHormigonTable: React.FC = () => {
     dispatch(fetchBasesHormigon());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log("API Data:", data); // Debugging step
-  }, [data]);
-
   if (loading) return <p className="text-blue-500 text-lg">Loading...</p>;
   if (error) return <p className="text-red-500 text-lg">Error: {error}</p>;
 

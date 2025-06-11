@@ -5,21 +5,32 @@ import {
 } from "@reduxjs/toolkit";
 import api from "../../utils/api";
 import type { BaseHormigon } from "../../types/BaseHormigon";
+import type { BaseHormigonDimensiones } from "../../types/BaseHormigonDimensiones";
+import type { BaseHormigonArmadura } from "../../types/BaseHormigonArmadura";
+import type { BaseHormigonCuantia } from "../../types/BaseHormigonCuantia";
+import type { BaseHormigonVerificacionPunzonado } from "../../types/BaseHormigonVerificacionPunzonado";
+import type { BaseHormigonVerificacionCorte } from "../../types/BaseHormigonVerificacionCorte";
 
-interface BaseHormigonState {
+interface BaseHormigonResultsState {
   base: BaseHormigon | null;
-  dimensionesBase: any | null;
-  verificaTensionAdmisible: any | null;
-  calculoCuantia: any | null;
+  dimensionesBase: BaseHormigonDimensiones | null;
+  verificaTensionAdmisible: boolean | null;
+  verificaPunzonado: BaseHormigonVerificacionPunzonado | null;
+  verificaCorte: BaseHormigonVerificacionCorte | null;
+  calculoCuantia: BaseHormigonCuantia | null;
+  calculoArmadura: BaseHormigonArmadura | null;
   loading: boolean;
   error: string | null;
 }
 
-const initialState: BaseHormigonState = {
+const initialState: BaseHormigonResultsState = {
   base: null,
   dimensionesBase: null,
   verificaTensionAdmisible: null,
+  verificaPunzonado: null,
+  verificaCorte: null,
   calculoCuantia: null,
+  calculoArmadura: null,
   loading: false,
   error: null,
 };
@@ -34,37 +45,69 @@ export const fetchBaseHormigon = createAsyncThunk<BaseHormigon, number>(
 );
 
 // Fetch dimensionesBase
-export const fetchDimensionesBase = createAsyncThunk<any, number>(
-  "baseHormigon/fetchDimensionesBase",
-  async (id) => {
-    const response = await api.get<any>(`baseshormigon/${id}/dimensionesBase`);
-    return response.data;
-  }
-);
+export const fetchDimensionesBase = createAsyncThunk<
+  BaseHormigonDimensiones,
+  number
+>("baseHormigon/fetchDimensionesBase", async (id) => {
+  const response = await api.get<BaseHormigonDimensiones>(
+    `baseshormigon/${id}/dimensionesBase`
+  );
+  return response.data;
+});
 
 // Fetch verificaTensionAdmisible
-export const fetchVerificaTensionAdmisible = createAsyncThunk<any, number>(
-  "baseHormigon/fetchVerificaTensionAdmisible",
+export const fetchVerificaTensionAdmisible = createAsyncThunk<boolean, number>(
+  "baseHormigonResults/fetchVerificaTensionAdmisible",
   async (id) => {
-    const response = await api.get<any>(
+    const response = await api.get<boolean>(
       `baseshormigon/${id}/verificaTensionAdmisible`
     );
     return response.data;
   }
 );
 
-// Fetch calculoCuantia
-export const fetchCalculoCuantia = createAsyncThunk<any, number>(
-  "baseHormigon/fetchCalculoCuantia",
-  async (id) => {
-    const response = await api.get<any>(`baseshormigon/${id}/calculoCuantia`);
-    return response.data;
-  }
-);
+export const fetchCalculoCuantia = createAsyncThunk<
+  BaseHormigonCuantia,
+  number
+>("baseHormigonResults/fetchCalculoCuantia", async (id) => {
+  const response = await api.get<BaseHormigonCuantia>(
+    `baseshormigon/${id}/calculoCuantia`
+  );
+  return response.data;
+});
 
-// Slice definition
+export const fetchCalculoArmadura = createAsyncThunk<
+  BaseHormigonArmadura,
+  number
+>("baseHormigonResults/fetchCalculoArmadura", async (id) => {
+  const response = await api.get<BaseHormigonArmadura>(
+    `baseshormigon/${id}/calculoArmadura`
+  );
+  return response.data;
+});
+
+export const fetchVerificaPunzonado = createAsyncThunk<
+  BaseHormigonVerificacionPunzonado,
+  number
+>("baseHormigonResults/fetchVerificaPunzonado", async (id) => {
+  const response = await api.get<BaseHormigonVerificacionPunzonado>(
+    `baseshormigon/${id}/verificaPunzonado`
+  );
+  return response.data;
+});
+
+export const fetchVerificaCorte = createAsyncThunk<
+  BaseHormigonVerificacionCorte,
+  number
+>("baseHormigonResults/fetchVerificaCorte", async (id) => {
+  const response = await api.get<BaseHormigonVerificacionCorte>(
+    `baseshormigon/${id}/verificaCorte`
+  );
+  return response.data;
+});
+
 const baseHormigonResultsSlice = createSlice({
-  name: "baseHormigon",
+  name: "baseHormigonResults",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -85,20 +128,35 @@ const baseHormigonResultsSlice = createSlice({
       })
       .addCase(
         fetchDimensionesBase.fulfilled,
-        (state, action: PayloadAction<any>) => {
+        (state, action: PayloadAction<BaseHormigonDimensiones>) => {
           state.dimensionesBase = action.payload;
         }
       )
+      .addCase(fetchVerificaTensionAdmisible.fulfilled, (state, action) => {
+        state.verificaTensionAdmisible = action.payload;
+      })
       .addCase(
-        fetchVerificaTensionAdmisible.fulfilled,
-        (state, action: PayloadAction<any>) => {
-          state.verificaTensionAdmisible = action.payload;
+        fetchVerificaPunzonado.fulfilled,
+        (state, action: PayloadAction<BaseHormigonVerificacionPunzonado>) => {
+          state.verificaPunzonado = action.payload;
+        }
+      )
+      .addCase(
+        fetchVerificaCorte.fulfilled,
+        (state, action: PayloadAction<BaseHormigonVerificacionCorte>) => {
+          state.verificaCorte = action.payload;
         }
       )
       .addCase(
         fetchCalculoCuantia.fulfilled,
-        (state, action: PayloadAction<any>) => {
+        (state, action: PayloadAction<BaseHormigonCuantia>) => {
           state.calculoCuantia = action.payload;
+        }
+      )
+      .addCase(
+        fetchCalculoArmadura.fulfilled,
+        (state, action: PayloadAction<BaseHormigonArmadura>) => {
+          state.calculoArmadura = action.payload;
         }
       );
   },

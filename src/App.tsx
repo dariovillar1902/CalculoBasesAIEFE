@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import BasesHormigonTable from "./components/BasesHormigonTable";
 import NuevaBaseForm from "./components/NuevaBaseForm";
-import ResultadosBase from "./components/ResultadosBase";
+import ResultadosBase from "./components/ResultadosBase/ResultadosBase";
 
 const App: React.FC = () => {
   return (
