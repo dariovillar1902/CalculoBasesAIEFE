@@ -4,17 +4,20 @@ import Navbar from "./components/Navbar";
 import BasesHormigonTable from "./components/BasesHormigonTable";
 import NuevaBaseForm from "./components/NuevaBaseForm";
 import ResultadosBase from "./components/ResultadosBase/ResultadosBase";
+import { AutomaticoProvider } from "./context/automatico-context";
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<BasesHormigonTable />} />
-        <Route path="/new" element={<NuevaBaseForm />} />
-        <Route path="/resultados" element={<ResultadosBase />} />
-      </Routes>
-    </Router>
+    <AutomaticoProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<BasesHormigonTable />} />
+          <Route path="/new" element={<NuevaBaseForm />} />
+          <Route path="/resultados" element={<ResultadosBase />} />
+        </Routes>
+      </Router>
+    </AutomaticoProvider>
   );
 };
 
