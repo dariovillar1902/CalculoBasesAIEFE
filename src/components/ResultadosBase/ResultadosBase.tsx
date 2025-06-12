@@ -13,6 +13,9 @@ import { BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import "./ResultadosBase.scss";
 import { useAutomatico } from "../../context/automatico-context.tsx";
+import DiagramaPlantaBase from "../DiagramaPlantaBase.tsx";
+import DiagramaVistaXBase from "../DiagramaVistaXBase.tsx";
+import DiagramaVistaYBase from "../DiagramaVistaYBase.tsx";
 
 const ResultadosBase: React.FC = () => {
   const location = useLocation();
@@ -120,7 +123,37 @@ const ResultadosBase: React.FC = () => {
       </div>
 
       <p className="status-message">{statusMessage}</p>
+      <div className="diagramas-container">
+        {dimensionesBase && calculoArmadura && (
+          <div className="estructura-diagrama">
+            <h3> PLANTA </h3>
+            <DiagramaPlantaBase
+              dimensionesBase={dimensionesBase}
+              calculoArmadura={calculoArmadura}
+            />
+          </div>
+        )}
 
+        {dimensionesBase && calculoArmadura && (
+          <div className="estructura-diagrama">
+            <h3> VISTA DIRECCIÓN X </h3>
+            <DiagramaVistaXBase
+              dimensionesBase={dimensionesBase}
+              calculoArmadura={calculoArmadura}
+            />
+          </div>
+        )}
+
+        {dimensionesBase && calculoArmadura && (
+          <div className="estructura-diagrama">
+            <h3> VISTA DIRECCIÓN Y </h3>
+            <DiagramaVistaYBase
+              dimensionesBase={dimensionesBase}
+              calculoArmadura={calculoArmadura}
+            />
+          </div>
+        )}
+      </div>
       {calculoArmadura && (
         <div className="katex-container">
           <div className="armadura-container">
