@@ -8,6 +8,7 @@ import {
   fetchVerificaPunzonado,
   fetchVerificaCorte,
   fetchCalculoArmadura,
+  fetchCalculoArmaduraConDiametros,
 } from "../../store/slices/baseHormigonResultsSlice.ts";
 import "katex/dist/katex.min.css";
 import "./ResultadosBase.scss";
@@ -45,6 +46,9 @@ const ResultadosBase: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState("Iniciando...");
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
+
+  const [barraX, setBarraX] = useState<number | null>(null);
+  const [barraY, setBarraY] = useState<number | null>(null);
 
   const steps = [
     {
@@ -196,6 +200,68 @@ const ResultadosBase: React.FC = () => {
       </div>
 
       <p className="status-message">{statusMessage}</p>
+      <div className="flex space-x-4 items-center mb-4">
+        <label className="text-gray-800">
+          Diámetro Barras X (mm):
+          <select
+            value={barraX ?? ""}
+            onChange={(e) => {
+              const newX = Number(e.target.value);
+              setBarraX(newX);
+              if (!isNaN(newX) && barraY !== null && !isNaN(barraY)) {
+                dispatch(
+                  fetchCalculoArmaduraConDiametros({
+                    id: baseId,
+                    diametroX: newX,
+                    diametroY: barraY,
+                  })
+                );
+              }
+            }}
+            className="ml-2 px-2 py-1 border rounded-md w-24 bg-white text-black"
+          >
+            <option value="" disabled>
+              Seleccionar
+            </option>
+            {[10, 12, 16, 20, 25].map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="text-gray-800">
+          Diámetro Barras Y (mm):
+          <select
+            value={barraY ?? ""}
+            onChange={(e) => {
+              const newY = Number(e.target.value);
+              setBarraY(newY);
+              if (!isNaN(newY) && barraX !== null && !isNaN(barraX)) {
+                dispatch(
+                  fetchCalculoArmaduraConDiametros({
+                    id: baseId,
+                    diametroX: barraX,
+                    diametroY: newY,
+                  })
+                );
+              }
+            }}
+            className="ml-2 px-2 py-1 border rounded-md w-24 bg-white text-black"
+          >
+            <option value="" disabled>
+              Seleccionar
+            </option>
+            {[10, 12, 16, 20, 25].map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <div className="diagramas-container">
         {dimensionesBase && calculoArmadura && (
           <div className="estructura-diagrama">

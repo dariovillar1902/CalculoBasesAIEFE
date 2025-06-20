@@ -106,6 +106,23 @@ export const fetchVerificaCorte = createAsyncThunk<
   return response.data;
 });
 
+export const fetchCalculoArmaduraConDiametros = createAsyncThunk<
+  BaseHormigonArmadura,
+  { id: number; diametroX: number; diametroY: number }
+>(
+  "baseHormigon/fetchCalculoArmaduraConDiametros",
+  async ({ id, diametroX, diametroY }) => {
+    const response = await api.post<BaseHormigonArmadura>(
+      `baseshormigon/calculoArmadura/${id}`,
+      {
+        DiametroX: diametroX,
+        DiametroY: diametroY,
+      }
+    );
+    return response.data;
+  }
+);
+
 const baseHormigonResultsSlice = createSlice({
   name: "baseHormigonResults",
   initialState,
@@ -158,7 +175,20 @@ const baseHormigonResultsSlice = createSlice({
         (state, action: PayloadAction<BaseHormigonArmadura>) => {
           state.calculoArmadura = action.payload;
         }
-      );
+      )
+      .addCase(
+        fetchCalculoArmaduraConDiametros.fulfilled,
+        (state, action: PayloadAction<BaseHormigonArmadura>) => {
+          state.calculoArmadura = action.payload;
+        }
+      )
+      .addCase(fetchCalculoArmaduraConDiametros.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCalculoArmaduraConDiametros.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
