@@ -16,4 +16,6 @@ export interface BaseHormigon {
   };
   recubrimientoHormigon: { valor: number; unidad: string; tipo: string };
   tensionFluenciaAcero: { valor: number; unidad: string; tipo: string };
+  diametroBarrasX: { valor: number; unidad: string; tipo: string };
+  diametroBarrasY: { valor: number; unidad: string; tipo: string };
 }
