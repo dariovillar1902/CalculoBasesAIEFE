@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import BasesHormigonTable from "./components/BasesHormigonTable";
+import Navbar from "./components/Navbar/Navbar";
+import BasesHormigonTable from "./components/BasesHormigonTable/BasesHormigonTable";
 import NuevaBaseForm from "./components/NuevaBaseForm";
 import ResultadosBase from "./components/ResultadosBase/ResultadosBase";
 import { AutomaticoProvider } from "./context/automatico-context";

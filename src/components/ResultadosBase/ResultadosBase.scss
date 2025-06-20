@@ -1,3 +1,4 @@
+@use "../../assets/colors" as *;
 // Styling for the container holding the formula
 .katex-container {
   background-color: white;
@@ -138,7 +139,7 @@
     margin-top: 30px;
 
     h3 {
-      color: black;
+      color: $black;
       text-align: center;
       font-size: 24px;
       font-weight: bold;

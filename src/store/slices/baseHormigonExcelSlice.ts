@@ -23,7 +23,7 @@ export const exportBaseHormigonExcel = createAsyncThunk<Blob, number>(
   async (baseId, { rejectWithValue }) => {
     try {
       const response = await api.post<Blob>(
-        `baseshormigon/exportExcel/${baseId}`,
+        `baseshormigonio/exportExcel/${baseId}`,
         {}, // empty body
         { responseType: "blob" }
       );
@@ -39,7 +39,7 @@ export const exportBaseHormigonCsv = createAsyncThunk<Blob, number>(
   async (baseId, { rejectWithValue }) => {
     try {
       const response = await api.post<Blob>(
-        `baseshormigon/exportCsv/${baseId}`,
+        `baseshormigonio/exportCsv/${baseId}`,
         {},
         { responseType: "blob" }
       );
@@ -55,7 +55,7 @@ export const exportBaseHormigonPdf = createAsyncThunk<Blob, number>(
   async (baseId, { rejectWithValue }) => {
     try {
       const response = await api.post<Blob>(
-        `baseshormigon/exportPdf/${baseId}`,
+        `baseshormigonio/exportPdf/${baseId}`,
         {},
         { responseType: "blob" }
       );

@@ -88,7 +88,7 @@ const NuevaBaseForm: React.FC = () => {
     try {
       setImporting(true);
       const response = await api.post<BaseHormigon>(
-        "baseshormigon/import",
+        "baseshormigonio/import",
         formDataUpload,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

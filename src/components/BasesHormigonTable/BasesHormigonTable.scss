@@ -1,0 +1,72 @@
+@use "../../assets/colors" as *;
+
+.table-wrapper {
+  padding: 1.5rem;
+  background-color: $light-gray;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.table-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: $gray;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.table-container {
+  overflow-x: auto;
+  background-color: $white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid $light-gray;
+}
+
+.table thead {
+  background-color: $red;
+  color: $white;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem 1rem;
+  border: 1px solid $light-gray;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table td {
+  color: $black;
+}
+
+.table th {
+  color: $white;
+}
+
+.table tr:hover {
+  background-color: $light-gray;
+}
+
+.icon-square-btn {
+  background-color: $red;
+  color: $white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  margin: 0 4px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
