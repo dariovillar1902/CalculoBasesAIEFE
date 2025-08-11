@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../utils/api";
-import type { BaseHormigon } from "../types/BaseHormigon"; // Import the updated type
+import type { BaseHormigon } from "../types/BaseHormigon";
 
 const NuevaBaseForm: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const baseId = location.state?.baseId;
 
-  // Estado inicial basado en BaseHormigon (sin ID)
   const initialState: Omit<BaseHormigon, "id"> = {
+    nombre: "",
     esfuerzoAxil: { valor: 0, unidad: "kN", tipo: "fuerza" },
     cargaAdmisible: { valor: 0, unidad: "kPa", tipo: "presion" },
     porcentajeCargaD: { valor: 0, unidad: "%", tipo: "porcentaje" },
@@ -28,6 +30,25 @@ const NuevaBaseForm: React.FC = () => {
     diametroBarrasY: { valor: 0, unidad: "mm", tipo: "longitud" },
   };
 
+  useEffect(() => {
+    const fetchBase = async () => {
+      if (baseId) {
+        try {
+          const { data } = await api.get<BaseHormigon>(
+            `baseshormigon/${baseId}`
+          );
+          const { id, ...rest } = data;
+          setFormData(rest);
+        } catch (err) {
+          console.error("Error fetching base data:", err);
+          alert("No se pudo cargar la base.");
+        }
+      }
+    };
+
+    fetchBase();
+  }, [baseId]);
+
   const [formData, setFormData] = useState(initialState);
   const [importing, setImporting] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -46,17 +67,29 @@ const NuevaBaseForm: React.FC = () => {
     });
   };
 
+  const handleTextChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: keyof BaseHormigon
+  ) => {
+    setFormData({
+      ...formData,
+      [key]: e.target.value,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.post("baseshormigon", formData);
-      const baseId = response.data.id;
-
-      alert("¡Nueva base creada exitosamente!");
-      navigate("/resultados", { state: { baseId } });
+      if (baseId) {
+        await api.put(`baseshormigon/${baseId}`, formData);
+        navigate("/resultados", { state: { baseId: baseId } });
+      } else {
+        const response = await api.post("baseshormigon", formData);
+        navigate("/resultados", { state: { baseId: response.data.id } });
+      }
     } catch (error) {
-      console.error("Error al crear la base:", error);
-      alert("Error al crear la base.");
+      console.error("Error al guardar la base:", error);
+      alert("Error al guardar la base.");
     }
   };
 
@@ -105,7 +138,7 @@ const NuevaBaseForm: React.FC = () => {
   return (
     <>
       <div className="w-full min-h-screen p-6 bg-gray-200">
-        <div className="w-full flex justify-center mb-6">
+        <div className="w-full flex justify-center mb-6 space-x-4">
           <input
             type="file"
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -113,6 +146,13 @@ const NuevaBaseForm: React.FC = () => {
             ref={fileInputRef}
             className="hidden"
           />
+          <button
+            type="button"
+            onClick={() => window.open("/BaseHormigon.xlsx", "_blank")}
+            className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 ml-4"
+          >
+            {importing ? "" : "Descargar plantilla"}
+          </button>
           <button
             type="button"
             onClick={handleImportClick}
@@ -127,39 +167,57 @@ const NuevaBaseForm: React.FC = () => {
             Crear Nueva Base
           </h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            {Object.entries(formData).map(([key, data]) => (
-              <div key={key}>
-                <label className="block text-gray-600">
-                  {formatLabel(key)}
-                </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="number"
-                    name={key}
-                    value={data.valor !== 0 ? data.valor : undefined}
-                    onChange={(e) => handleChange(e, key as keyof BaseHormigon)}
-                    className="w-3/4 px-3 py-2 border rounded-lg bg-gray-100 text-black focus:ring-blue-500"
-                    required
-                  />
-                  <select
-                    className="w-1/4 px-2 py-2 border rounded-lg bg-gray-200 text-black"
-                    value={data.unidad}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        [key]: { ...data, unidad: e.target.value },
-                      })
-                    }
-                  >
-                    {unitOptions[data.tipo]?.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+            <div className="col-span-2">
+              <label className="block text-gray-600">Nombre</label>
+              <input
+                type="text"
+                name="nombre"
+                value={formData.nombre || ""}
+                onChange={(e) => handleTextChange(e, "nombre")}
+                maxLength={140}
+                className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-black focus:ring-blue-500"
+                required
+              />
+            </div>
+            {Object.entries(formData).map(([key, data]) => {
+              if (key === "nombre") return null;
+
+              return (
+                <div key={key}>
+                  <label className="block text-gray-600">
+                    {formatLabel(key)}
+                  </label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="number"
+                      name={key}
+                      value={data.valor !== 0 ? data.valor : undefined}
+                      onChange={(e) =>
+                        handleChange(e, key as keyof BaseHormigon)
+                      }
+                      className="w-3/4 px-3 py-2 border rounded-lg bg-gray-100 text-black focus:ring-blue-500"
+                      required
+                    />
+                    <select
+                      className="w-1/4 px-2 py-2 border rounded-lg bg-gray-200 text-black"
+                      value={data.unidad}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [key]: { ...data, unidad: e.target.value },
+                        })
+                      }
+                    >
+                      {unitOptions[data.tipo]?.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             <div className="col-span-2">
               <button

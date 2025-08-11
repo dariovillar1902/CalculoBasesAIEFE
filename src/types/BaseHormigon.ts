@@ -1,5 +1,6 @@
 export interface BaseHormigon {
   id: number;
+  nombre: string;
   esfuerzoAxil: { valor: number; unidad: string; tipo: string };
   porcentajeCargaD: { valor: number; unidad: string; tipo: string };
   porcentajeCargaL: { valor: number; unidad: string; tipo: string };

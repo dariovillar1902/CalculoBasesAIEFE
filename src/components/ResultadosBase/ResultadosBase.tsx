@@ -27,12 +27,19 @@ import {
   exportBaseHormigonExcel,
   exportBaseHormigonPdf,
 } from "../../store/slices/baseHormigonExcelSlice.ts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFileCsv,
+  faFileExcel,
+  faFilePdf,
+} from "@fortawesome/free-solid-svg-icons";
 
 const ResultadosBase: React.FC = () => {
   const location = useLocation();
   const baseId: number = location.state?.baseId;
   const dispatch = useAppDispatch();
   const { automatico } = useAutomatico();
+  const [showResults, setShowResults] = useState(false);
 
   const {
     dimensionesBase,
@@ -49,6 +56,10 @@ const ResultadosBase: React.FC = () => {
 
   const [barraX, setBarraX] = useState<number | null>(null);
   const [barraY, setBarraY] = useState<number | null>(null);
+
+  const base = useAppSelector((state) =>
+    state.baseHormigon.data.find((b) => b.id === baseId)
+  );
 
   const steps = [
     {
@@ -87,6 +98,7 @@ const ResultadosBase: React.FC = () => {
     if (!baseId) return;
 
     const processStep = async (stepIndex: number) => {
+      if (!showResults) setShowResults(true);
       setStatusMessage(steps[stepIndex].label);
       setProgress(((stepIndex + 1) / steps.length) * 100);
 
@@ -104,6 +116,7 @@ const ResultadosBase: React.FC = () => {
   }, [baseId]);
 
   const handleNextStep = () => {
+    if (!showResults) setShowResults(true);
     if (currentStep < steps.length) {
       setStatusMessage(steps[currentStep].label);
       setProgress(((currentStep + 1) / steps.length) * 100);
@@ -165,24 +178,31 @@ const ResultadosBase: React.FC = () => {
 
   return (
     <div className="resultados-base">
-      <button
-        className="bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-green-700 mb-4"
-        onClick={handleExportExcel}
-      >
-        Exportar a Excel
-      </button>
-      <button
-        className="bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-yellow-700 mb-4 ml-2"
-        onClick={handleExportCsv}
-      >
-        Exportar a CSV
-      </button>
-      <button
-        className="bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-red-700 mb-4 ml-2"
-        onClick={handleExportPdf}
-      >
-        Exportar a PDF
-      </button>
+      <div className="export-buttons flex space-x-4 mb-4">
+        <button
+          onClick={handleExportExcel}
+          className="icon-btn bg-green-600 hover:bg-green-700"
+          title="Exportar a Excel"
+        >
+          <FontAwesomeIcon icon={faFileExcel} size="lg" />
+        </button>
+
+        <button
+          onClick={handleExportCsv}
+          className="icon-btn bg-yellow-600 hover:bg-yellow-700"
+          title="Exportar a CSV"
+        >
+          <FontAwesomeIcon icon={faFileCsv} size="lg" />
+        </button>
+
+        <button
+          onClick={handleExportPdf}
+          className="icon-btn bg-red-600 hover:bg-red-700"
+          title="Exportar a PDF"
+        >
+          <FontAwesomeIcon icon={faFilePdf} size="lg" />
+        </button>
+      </div>
 
       {!automatico && currentStep < steps.length && (
         <button
@@ -193,13 +213,6 @@ const ResultadosBase: React.FC = () => {
         </button>
       )}
 
-      <h2>Resultados</h2>
-
-      <div className="progress-bar-container">
-        <div className="progress-bar" style={{ width: `${progress}%` }} />
-      </div>
-
-      <p className="status-message">{statusMessage}</p>
       <div className="flex space-x-4 items-center mb-4">
         <label className="text-gray-800">
           Diámetro Barras X (mm):
@@ -262,9 +275,20 @@ const ResultadosBase: React.FC = () => {
         </label>
       </div>
 
+      <h2>Resultados</h2>
+      <h3 className="text-xl font-semibold mb-4">
+        {base?.nombre ?? "Cargando nombre..."}
+      </h3>
+
+      <div className="progress-bar-container">
+        <div className="progress-bar" style={{ width: `${progress}%` }} />
+      </div>
+
+      <p className="status-message">{statusMessage}</p>
+
       <div className="diagramas-container">
-        {dimensionesBase && calculoArmadura && (
-          <div className="estructura-diagrama">
+        {showResults && dimensionesBase && calculoArmadura && (
+          <div className="estructura-diagrama fade-in">
             <h3> PLANTA </h3>
             <DiagramaPlantaBase
               dimensionesBase={dimensionesBase}
@@ -273,8 +297,8 @@ const ResultadosBase: React.FC = () => {
           </div>
         )}
 
-        {dimensionesBase && calculoArmadura && (
-          <div className="estructura-diagrama">
+        {showResults && dimensionesBase && calculoArmadura && (
+          <div className="estructura-diagrama fade-in">
             <h3> VISTA DIRECCIÓN X </h3>
             <DiagramaVistaXBase
               dimensionesBase={dimensionesBase}
@@ -283,8 +307,8 @@ const ResultadosBase: React.FC = () => {
           </div>
         )}
 
-        {dimensionesBase && calculoArmadura && (
-          <div className="estructura-diagrama">
+        {showResults && dimensionesBase && calculoArmadura && (
+          <div className="estructura-diagrama fade-in">
             <h3> VISTA DIRECCIÓN Y </h3>
             <DiagramaVistaYBase
               dimensionesBase={dimensionesBase}
@@ -293,30 +317,44 @@ const ResultadosBase: React.FC = () => {
           </div>
         )}
       </div>
-      {calculoArmadura && (
-        <FormulasCalculoArmadura calculoArmadura={calculoArmadura} />
+      {showResults && calculoArmadura && (
+        <div className="fade-in formulas-container">
+          <FormulasCalculoArmadura calculoArmadura={calculoArmadura} />
+        </div>
       )}
 
-      {verificaCorte && (
-        <FormulasVerificacionCorte verificaCorte={verificaCorte} />
+      {showResults && verificaCorte && (
+        <div className="fade-in formulas-container">
+          <FormulasVerificacionCorte verificaCorte={verificaCorte} />
+        </div>
       )}
 
-      {verificaPunzonado && (
-        <FormulasVerificacionPunzonado verificaPunzonado={verificaPunzonado} />
+      {showResults && verificaPunzonado && (
+        <div className="fade-in formulas-container">
+          <FormulasVerificacionPunzonado
+            verificaPunzonado={verificaPunzonado}
+          />
+        </div>
       )}
 
-      {calculoCuantia && (
-        <FormulasCalculoCuantia calculoCuantia={calculoCuantia} />
+      {showResults && calculoCuantia && (
+        <div className="fade-in formulas-container">
+          <FormulasCalculoCuantia calculoCuantia={calculoCuantia} />
+        </div>
       )}
 
-      {verificaTensionAdmisible !== null && (
-        <FormulasVerificacionTensionAdmisible
-          verificaTensionAdmisible={verificaTensionAdmisible}
-        />
+      {showResults && verificaTensionAdmisible !== null && (
+        <div className="fade-in formulas-container">
+          <FormulasVerificacionTensionAdmisible
+            verificaTensionAdmisible={verificaTensionAdmisible}
+          />
+        </div>
       )}
 
-      {dimensionesBase && (
-        <FormulasDimensionesBase dimensionesBase={dimensionesBase} />
+      {showResults && dimensionesBase && (
+        <div className="fade-in formulas-container">
+          <FormulasDimensionesBase dimensionesBase={dimensionesBase} />
+        </div>
       )}
     </div>
   );

@@ -15,13 +15,13 @@ const FormulasCalculoArmadura: React.FC<Props> = ({ calculoArmadura }) => {
 
         <div className="armadura-item">
           <h3>Barras en X:</h3>
-          <BlockMath math="N_x = \left\lceil \frac{A_{sx}}{A_{bx}} \right\rceil" />
+          <BlockMath math="N_x = \frac{A_{sx}}{A_{bx}}" />
           <p>{calculoArmadura.cantidadBarrasX}</p>
         </div>
 
         <div className="armadura-item">
           <h3>Barras en Y:</h3>
-          <BlockMath math="N_y = \left\lceil \frac{A_{sy}}{A_{by}} \right\rceil" />
+          <BlockMath math="N_y = \frac{A_{sy}}{A_{by}}" />
           <p>{calculoArmadura.cantidadBarrasY}</p>
         </div>
 

@@ -6,9 +6,12 @@ import type { BaseHormigon } from "../../types/BaseHormigon";
 import "./BasesHormigonTable.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartBar, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
 
 const BasesHormigonTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { data, loading, error } = useSelector(
     (state: RootState) => state.baseHormigon
   );
@@ -17,10 +20,26 @@ const BasesHormigonTable: React.FC = () => {
     dispatch(fetchBasesHormigon());
   }, [dispatch]);
 
-  const handleDelete = (id: number) => {
-    if (confirm("¿Estás seguro de que quieres eliminar esta base?")) {
-      // Dispatch deleteBaseHormigon(id)
-      // or call api.delete(`baseshormigon/${id}`)
+  const handleViewResults = (id: number) => {
+    navigate("/resultados", { state: { baseId: id } });
+  };
+
+  const handleEdit = (id: number) => {
+    navigate("/new", { state: { baseId: id } });
+  };
+
+  const handleDelete = async (id: number) => {
+    const confirmed = confirm(
+      "¿Estás seguro de que quieres eliminar esta base?"
+    );
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`baseshormigon/${id}`);
+      dispatch(fetchBasesHormigon());
+    } catch (error) {
+      console.error("Error al eliminar la base:", error);
+      alert("No se pudo eliminar la base.");
     }
   };
 
@@ -33,31 +52,43 @@ const BasesHormigonTable: React.FC = () => {
         <table className="table">
           <thead>
             <tr>
+              <th>Nombre</th>
               <th>Esfuerzo Axil (kN) </th>
               <th>Carga Admisible (kPa)</th>
               <th>Ancho Columna X (m)</th>
               <th>Ancho Columna Y (m)</th>
               <th>Nivel de Fundación (m) </th>
-              <th>Recubrimiento Hormigón (m) </th>
-              <th>Acciones</th>
+              <th>Recubrimiento (m) </th>
+              <th className="acciones-column">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {data.map((item: BaseHormigon) => (
               <tr key={item.id}>
+                <td>{item.nombre}</td>
                 <td>{item.esfuerzoAxil.valor}</td>
                 <td>{item.cargaAdmisible.valor}</td>
                 <td>{item.anchoColumnaX.valor}</td>
                 <td>{item.anchoColumnaY.valor}</td>
                 <td>{item.nivelFundacion.valor}</td>
                 <td>{item.recubrimientoHormigon.valor}</td>
-                <td>
-                  <button className="icon-square-btn" title="Ver resultados">
+                <td className="acciones-column">
+                  <button
+                    className="icon-square-btn"
+                    title="Ver resultados"
+                    onClick={() => handleViewResults(item.id)}
+                  >
                     <FontAwesomeIcon icon={faChartBar} />
                   </button>
-                  <button className="icon-square-btn" title="Editar">
+
+                  <button
+                    className="icon-square-btn"
+                    title="Editar"
+                    onClick={() => handleEdit(item.id)}
+                  >
                     <FontAwesomeIcon icon={faPen} />
                   </button>
+
                   <button
                     className="icon-square-btn danger"
                     title="Eliminar"
