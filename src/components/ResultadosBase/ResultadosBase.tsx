@@ -276,9 +276,7 @@ const ResultadosBase: React.FC = () => {
       </div>
 
       <h2>Resultados</h2>
-      <h3 className="text-xl font-semibold mb-4">
-        {base?.nombre ?? "Cargando nombre..."}
-      </h3>
+      <h3 className="text-xl font-semibold mb-4">{base?.nombre ?? ""}</h3>
 
       <div className="progress-bar-container">
         <div className="progress-bar" style={{ width: `${progress}%` }} />
@@ -317,43 +315,70 @@ const ResultadosBase: React.FC = () => {
           </div>
         )}
       </div>
-      {showResults && calculoArmadura && (
+      {showResults &&
+        calculoArmadura &&
+        base &&
+        dimensionesBase &&
+        calculoCuantia && (
+          <div className="fade-in formulas-container">
+            <FormulasCalculoArmadura
+              calculoArmadura={calculoArmadura}
+              base={base}
+              dimensionesBase={dimensionesBase}
+              cuantia={calculoCuantia}
+            />
+          </div>
+        )}
+
+      {showResults && verificaCorte && base && dimensionesBase && (
         <div className="fade-in formulas-container">
-          <FormulasCalculoArmadura calculoArmadura={calculoArmadura} />
+          <FormulasVerificacionCorte
+            verificaCorte={verificaCorte}
+            base={base}
+            dimensionesBase={dimensionesBase}
+          />
         </div>
       )}
 
-      {showResults && verificaCorte && (
-        <div className="fade-in formulas-container">
-          <FormulasVerificacionCorte verificaCorte={verificaCorte} />
-        </div>
-      )}
-
-      {showResults && verificaPunzonado && (
+      {showResults && verificaPunzonado && base && dimensionesBase && (
         <div className="fade-in formulas-container">
           <FormulasVerificacionPunzonado
             verificaPunzonado={verificaPunzonado}
+            base={base}
+            dimensionesBase={dimensionesBase}
           />
         </div>
       )}
 
-      {showResults && calculoCuantia && (
+      {showResults && calculoCuantia && base && dimensionesBase && (
         <div className="fade-in formulas-container">
-          <FormulasCalculoCuantia calculoCuantia={calculoCuantia} />
-        </div>
-      )}
-
-      {showResults && verificaTensionAdmisible !== null && (
-        <div className="fade-in formulas-container">
-          <FormulasVerificacionTensionAdmisible
-            verificaTensionAdmisible={verificaTensionAdmisible}
+          <FormulasCalculoCuantia
+            calculoCuantia={calculoCuantia}
+            base={base}
+            dimensionesBase={dimensionesBase}
           />
         </div>
       )}
 
-      {showResults && dimensionesBase && (
+      {showResults &&
+        verificaTensionAdmisible !== null &&
+        base &&
+        dimensionesBase && (
+          <div className="fade-in formulas-container">
+            <FormulasVerificacionTensionAdmisible
+              verificaTensionAdmisible={verificaTensionAdmisible}
+              base={base}
+              dimensionesBase={dimensionesBase}
+            />
+          </div>
+        )}
+
+      {showResults && dimensionesBase && base && (
         <div className="fade-in formulas-container">
-          <FormulasDimensionesBase dimensionesBase={dimensionesBase} />
+          <FormulasDimensionesBase
+            dimensionesBase={dimensionesBase}
+            base={base}
+          />
         </div>
       )}
     </div>
