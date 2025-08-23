@@ -360,18 +360,15 @@ const ResultadosBase: React.FC = () => {
         </div>
       )}
 
-      {showResults &&
-        verificaTensionAdmisible !== null &&
-        base &&
-        dimensionesBase && (
-          <div className="fade-in formulas-container">
-            <FormulasVerificacionTensionAdmisible
-              verificaTensionAdmisible={verificaTensionAdmisible}
-              base={base}
-              dimensionesBase={dimensionesBase}
-            />
-          </div>
-        )}
+      {showResults && verificaTensionAdmisible && base && dimensionesBase && (
+        <div className="fade-in formulas-container">
+          <FormulasVerificacionTensionAdmisible
+            verificaTensionAdmisible={verificaTensionAdmisible}
+            base={base}
+            dimensionesBase={dimensionesBase}
+          />
+        </div>
+      )}
 
       {showResults && dimensionesBase && base && (
         <div className="fade-in formulas-container">

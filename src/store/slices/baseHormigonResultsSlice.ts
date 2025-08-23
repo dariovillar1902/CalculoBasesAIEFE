@@ -10,11 +10,12 @@ import type { BaseHormigonArmadura } from "../../types/BaseHormigonArmadura";
 import type { BaseHormigonCuantia } from "../../types/BaseHormigonCuantia";
 import type { BaseHormigonVerificacionPunzonado } from "../../types/BaseHormigonVerificacionPunzonado";
 import type { BaseHormigonVerificacionCorte } from "../../types/BaseHormigonVerificacionCorte";
+import type { BaseHormigonVerificaciones } from "../../types/BaseHormigonVerificaciones";
 
 interface BaseHormigonResultsState {
   base: BaseHormigon | null;
   dimensionesBase: BaseHormigonDimensiones | null;
-  verificaTensionAdmisible: boolean | null;
+  verificaTensionAdmisible: BaseHormigonVerificaciones | null;
   verificaPunzonado: BaseHormigonVerificacionPunzonado | null;
   verificaCorte: BaseHormigonVerificacionCorte | null;
   calculoCuantia: BaseHormigonCuantia | null;
@@ -55,16 +56,16 @@ export const fetchDimensionesBase = createAsyncThunk<
   return response.data;
 });
 
-// Fetch verificaTensionAdmisible
-export const fetchVerificaTensionAdmisible = createAsyncThunk<boolean, number>(
-  "baseHormigonResults/fetchVerificaTensionAdmisible",
-  async (id) => {
-    const response = await api.get<boolean>(
-      `baseshormigon/${id}/verificaTensionAdmisible`
-    );
-    return response.data;
-  }
-);
+// thunks
+export const fetchVerificaTensionAdmisible = createAsyncThunk<
+  BaseHormigonVerificaciones,
+  number
+>("baseHormigonResults/fetchVerificaTensionAdmisible", async (id) => {
+  const response = await api.get<BaseHormigonVerificaciones>(
+    `baseshormigon/${id}/verificaTensionAdmisible`
+  );
+  return response.data;
+});
 
 export const fetchCalculoCuantia = createAsyncThunk<
   BaseHormigonCuantia,
@@ -149,9 +150,13 @@ const baseHormigonResultsSlice = createSlice({
           state.dimensionesBase = action.payload;
         }
       )
-      .addCase(fetchVerificaTensionAdmisible.fulfilled, (state, action) => {
-        state.verificaTensionAdmisible = action.payload;
-      })
+      .addCase(
+        fetchVerificaTensionAdmisible.fulfilled,
+        (state, action: PayloadAction<BaseHormigonVerificaciones>) => {
+          state.verificaTensionAdmisible = action.payload;
+        }
+      )
+
       .addCase(
         fetchVerificaPunzonado.fulfilled,
         (state, action: PayloadAction<BaseHormigonVerificacionPunzonado>) => {

@@ -1,0 +1,18 @@
+.label {
+  display: block;
+  color: #4b5563;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f3f4f6;
+  color: black;
+
+  &:focus {
+    outline: none;
+    ring: 2px solid #3b82f6;
+  }
+}

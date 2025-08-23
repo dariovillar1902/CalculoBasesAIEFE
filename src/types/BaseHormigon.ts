@@ -1,22 +1,29 @@
+import type { ValueUnitPair } from "./ValueUnitPair";
+
 export interface BaseHormigon {
   id: number;
   nombre: string;
-  esfuerzoAxil: { valor: number; unidad: string; tipo: string };
-  porcentajeCargaD: { valor: number; unidad: string; tipo: string };
-  porcentajeCargaL: { valor: number; unidad: string; tipo: string };
-  anchoColumnaX: { valor: number; unidad: string; tipo: string };
-  anchoColumnaY: { valor: number; unidad: string; tipo: string };
-  cargaAdmisible: { valor: number; unidad: string; tipo: string };
-  pesoEspecificoSuelo: { valor: number; unidad: string; tipo: string };
-  nivelFundacion: { valor: number; unidad: string; tipo: string };
-  pesoEspecificoHormigon: { valor: number; unidad: string; tipo: string };
-  resistenciaCaracteristicaHormigon: {
-    valor: number;
-    unidad: string;
-    tipo: string;
-  };
-  recubrimientoHormigon: { valor: number; unidad: string; tipo: string };
-  tensionFluenciaAcero: { valor: number; unidad: string; tipo: string };
-  diametroBarrasX: { valor: number; unidad: string; tipo: string };
-  diametroBarrasY: { valor: number; unidad: string; tipo: string };
+
+  // Parámetros básicos
+  esfuerzoAxil: ValueUnitPair;
+  esfuerzoCorteX: ValueUnitPair;
+  esfuerzoCorteY: ValueUnitPair;
+  momentoX: ValueUnitPair;
+  momentoY: ValueUnitPair;
+  cargaAdmisible: ValueUnitPair;
+  moduloBalastoVertical: ValueUnitPair;
+
+  // Ajustes avanzados
+  porcentajeCargaD: ValueUnitPair;
+  porcentajeCargaL: ValueUnitPair;
+  anchoColumnaX: ValueUnitPair;
+  anchoColumnaY: ValueUnitPair;
+  pesoEspecificoSuelo: ValueUnitPair;
+  nivelFundacion: ValueUnitPair;
+  pesoEspecificoHormigon: ValueUnitPair;
+  resistenciaCaracteristicaHormigon: ValueUnitPair;
+  recubrimientoHormigon: ValueUnitPair;
+  tensionFluenciaAcero: ValueUnitPair;
+  diametroBarrasX: ValueUnitPair;
+  diametroBarrasY: ValueUnitPair;
 }

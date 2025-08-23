@@ -1,0 +1,74 @@
+.label {
+  display: block;
+  color: #4b5563;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f3f4f6;
+  color: black;
+
+  &:focus {
+    outline: none;
+    ring: 2px solid #3b82f6;
+  }
+}
+
+.inputNumber {
+  width: 75%;
+}
+
+.selectUnit {
+  width: 25%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #e5e7eb;
+  color: black;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.tooltipIcon {
+  font-style: normal;
+  font-weight: bold;
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: #007bff;
+}
+
+.tooltipText {
+  visibility: hidden;
+  width: max-content;
+  max-width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 4px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  left: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.tooltipWrapper:hover .tooltipText {
+  visibility: visible;
+}
