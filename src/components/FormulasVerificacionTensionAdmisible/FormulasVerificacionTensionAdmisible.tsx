@@ -30,14 +30,14 @@ const FormulasVerificacionTensionAdmisible: React.FC<Props> = ({
         </h2>
 
         <FormulaBlock
-          title="Tensión X"
+          title="Tensión 1"
           tooltip="Tensión ajustada por excentricidad en X"
-          symbolic="σ_x = \frac{P_d \cdot (1 + 6 \cdot e_x / a_x)}{a_x \cdot a_y}"
-          substituted={`σ_x = \\frac{${dimensionesBase.cargaDiseno.toFixed(
+          symbolic="σ_1 = \frac{P_d \cdot (1 + 6 \cdot e / a_x)}{a_x \cdot a_y}"
+          substituted={`σ_1 = \\frac{${dimensionesBase.cargaDiseno.toFixed(
             2
           )}\\ \\text{kN} \\cdot (1 + 6 \\cdot ${ex.toFixed(
             2
-          )} / ${dimensionesBase.anchoX.toFixed(
+          )}\\ \\text{m} / ${dimensionesBase.anchoX.toFixed(
             2
           )}\\ \\text{m})}{${dimensionesBase.anchoX.toFixed(
             2
@@ -49,14 +49,14 @@ const FormulasVerificacionTensionAdmisible: React.FC<Props> = ({
         />
 
         <FormulaBlock
-          title="Tensión Y"
+          title="Tensión 2"
           tooltip="Tensión ajustada por excentricidad en Y"
-          symbolic="σ_y = \frac{P_d \cdot (1 - 6 \cdot e_y / a_y)}{a_x \cdot a_y}"
-          substituted={`σ_y = \\frac{${dimensionesBase.cargaDiseno.toFixed(
+          symbolic="σ_2 = \frac{P_d \cdot (1 - 6 \cdot e / a_x)}{a_x \cdot a_y}"
+          substituted={`σ_2 = \\frac{${dimensionesBase.cargaDiseno.toFixed(
             2
           )}\\ \\text{kN} \\cdot (1 - 6 \\cdot ${ey.toFixed(
             2
-          )} / ${dimensionesBase.anchoY.toFixed(
+          )}\\ \\text{m} / ${dimensionesBase.anchoX.toFixed(
             2
           )}\\ \\text{m})}{${dimensionesBase.anchoX.toFixed(
             2

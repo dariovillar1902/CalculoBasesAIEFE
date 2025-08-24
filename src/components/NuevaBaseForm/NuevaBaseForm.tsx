@@ -16,11 +16,11 @@ const NuevaBaseForm: React.FC = () => {
     nombre: "",
 
     esfuerzoAxil: { valor: 0, unidad: "kN", tipo: "fuerza" },
+    cargaAdmisible: { valor: 0, unidad: "kPa", tipo: "presion" },
     esfuerzoCorteX: { valor: 0, unidad: "kN", tipo: "fuerza" },
     esfuerzoCorteY: { valor: 0, unidad: "kN", tipo: "fuerza" },
     momentoX: { valor: 0, unidad: "kN·m", tipo: "momento" },
     momentoY: { valor: 0, unidad: "kN·m", tipo: "momento" },
-    cargaAdmisible: { valor: 0, unidad: "kPa", tipo: "presion" },
     moduloBalastoVertical: { valor: 0, unidad: "kN/m³", tipo: "rigidez" },
 
     porcentajeCargaD: { valor: 60, unidad: "%", tipo: "porcentaje" },
@@ -50,11 +50,11 @@ const NuevaBaseForm: React.FC = () => {
 
   const camposBasicos: FormFieldKey[] = [
     "esfuerzoAxil",
+    "cargaAdmisible",
     "esfuerzoCorteX",
     "esfuerzoCorteY",
     "momentoX",
     "momentoY",
-    "cargaAdmisible",
     "moduloBalastoVertical",
   ];
 

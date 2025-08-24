@@ -23,7 +23,11 @@ const FormulasDimensionesBase: React.FC<Props> = ({
           title="Área Necesaria"
           tooltip="Área necesaria para soportar la carga de diseño con la tensión admisible"
           symbolic="A_{nec} = \frac{1.10 \cdot P}{0.65 \cdot 1.25 \cdot q_{adm}}"
-          substituted={`A_{nec} = \\frac{1.10 \\cdot ${base.esfuerzoAxil.valor}\\ \\text{kN}}{0.65 \\cdot 1.25 \\cdot ${base.cargaAdmisible.valor}\\ \\text{kN/m²}}`}
+          substituted={`A_{nec} = \\frac{1.10 \\cdot ${base.esfuerzoAxil.valor.toFixed(
+            2
+          )}\\ \\text{kN}}{0.65 \\cdot 1.25 \\cdot ${base.cargaAdmisible.valor.toFixed(
+            2
+          )}\\ \\text{kN/m²}}`}
           result={dimensionesBase.areaNecesaria.toFixed(2)}
           unit="m²"
         />
