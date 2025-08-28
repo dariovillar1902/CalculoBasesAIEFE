@@ -7,4 +7,10 @@ export interface BaseHormigonDimensiones {
   vueloY: number;
   verificaVuelos: boolean;
   altura: number;
+
+  // Nuevas variables de cálculo
+  cargaDiseno: number; // Pd
+  tensionPromedio: number; // qAvg
+  relacionLados: number; // AnchoX / AnchoY
+  areaNecesaria: number; // Área antes del ajuste
 }

@@ -6,43 +6,6 @@
   background-color: #e5e7eb;
 }
 
-.buttonGroup {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-}
-
-.hiddenInput {
-  display: none;
-}
-
-.downloadButton {
-  background-color: #22c55e;
-  color: white;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  &:hover {
-    background-color: #16a34a;
-  }
-  margin-left: 1rem;
-}
-
-.importButton {
-  background-color: #f59e0b;
-  color: white;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  &:hover {
-    background-color: #d97706;
-  }
-}
-
 .card {
   width: 100%;
   background-color: white;
@@ -69,42 +32,6 @@
   grid-column: span 2;
 }
 
-.label {
-  display: block;
-  color: #4b5563;
-}
-
-.input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background-color: #f3f4f6;
-  color: black;
-  &:focus {
-    outline: none;
-    ring: 2px solid #3b82f6;
-  }
-}
-
-.inputGroup {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.inputNumber {
-  width: 75%;
-}
-
-.selectUnit {
-  width: 25%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background-color: #e5e7eb;
-  color: black;
-}
-
 .submitButton {
   width: 100%;
   background-color: #2563eb;
@@ -113,45 +40,22 @@
   padding: 0.5rem;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
   &:hover {
     background-color: #1d4ed8;
   }
 }
 
-.tooltipWrapper {
-  position: relative;
-  display: inline-block;
-  margin-left: 8px;
-  cursor: pointer;
-}
+.toggleAdvancedButton {
+  width: 100%;
+  background-color: #6b7280;
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 
-.tooltipIcon {
-  font-style: normal;
-  font-weight: bold;
-  border: none;
-  background: none;
-  font-size: 16px;
-  color: #007bff;
-}
-
-.tooltipText {
-  visibility: hidden;
-  width: max-content;
-  max-width: 250px;
-  background-color: #333;
-  color: #fff;
-  text-align: left;
-  border-radius: 4px;
-  padding: 8px;
-  position: absolute;
-  z-index: 1;
-  top: 24px;
-  left: 0;
-  font-size: 13px;
-  line-height: 1.4;
-  white-space: normal;
-}
-
-.tooltipWrapper:hover .tooltipText {
-  visibility: visible;
+  &:hover {
+    background-color: #4b5563;
+  }
 }

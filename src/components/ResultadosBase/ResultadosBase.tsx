@@ -95,25 +95,25 @@ const ResultadosBase: React.FC = () => {
   ];
 
   useEffect(() => {
-    if (!baseId) return;
+    if (!baseId || !automatico) return;
 
-    const processStep = async (stepIndex: number) => {
-      if (!showResults) setShowResults(true);
-      setStatusMessage(steps[stepIndex].label);
-      setProgress(((stepIndex + 1) / steps.length) * 100);
+    const runSteps = async () => {
+      setShowResults(true);
 
-      steps[stepIndex].action();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      for (let i = 0; i < steps.length; i++) {
+        setStatusMessage(steps[i].label);
+        setProgress(((i + 1) / steps.length) * 100);
 
-      if (automatico && stepIndex < steps.length - 1) {
-        processStep(stepIndex + 1);
+        // 🚀 await dispatch instead of just calling
+        await dispatch(steps[i].action(baseId));
+
+        // optional: small delay to visualize progress
+        await new Promise((res) => setTimeout(res, 500));
       }
     };
 
-    if (automatico) {
-      processStep(0);
-    }
-  }, [baseId]);
+    runSteps();
+  }, [baseId, automatico, dispatch]);
 
   const handleNextStep = () => {
     if (!showResults) setShowResults(true);
@@ -360,18 +360,15 @@ const ResultadosBase: React.FC = () => {
         </div>
       )}
 
-      {showResults &&
-        verificaTensionAdmisible !== null &&
-        base &&
-        dimensionesBase && (
-          <div className="fade-in formulas-container">
-            <FormulasVerificacionTensionAdmisible
-              verificaTensionAdmisible={verificaTensionAdmisible}
-              base={base}
-              dimensionesBase={dimensionesBase}
-            />
-          </div>
-        )}
+      {showResults && verificaTensionAdmisible && base && dimensionesBase && (
+        <div className="fade-in formulas-container">
+          <FormulasVerificacionTensionAdmisible
+            verificaTensionAdmisible={verificaTensionAdmisible}
+            base={base}
+            dimensionesBase={dimensionesBase}
+          />
+        </div>
+      )}
 
       {showResults && dimensionesBase && base && (
         <div className="fade-in formulas-container">
