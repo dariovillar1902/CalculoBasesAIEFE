@@ -6,12 +6,12 @@ export interface BaseHormigon {
 
   // Parámetros básicos
   esfuerzoAxil: ValueUnitPair;
-  esfuerzoCorteX: ValueUnitPair;
-  esfuerzoCorteY: ValueUnitPair;
+  corteX: ValueUnitPair;
+  corteY: ValueUnitPair;
   momentoX: ValueUnitPair;
   momentoY: ValueUnitPair;
   cargaAdmisible: ValueUnitPair;
-  moduloBalastoVertical: ValueUnitPair;
+  moduloBalasto: ValueUnitPair;
 
   // Ajustes avanzados
   porcentajeCargaD: ValueUnitPair;

@@ -18,11 +18,10 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
   const PD = (base.porcentajeCargaD.valor / 100) * base.esfuerzoAxil.valor;
   const PL = (base.porcentajeCargaL.valor / 100) * base.esfuerzoAxil.valor;
 
-  const MD = (base.porcentajeCargaD.valor / 100) * base.momentoX.valor;
-  const ML = (base.porcentajeCargaL.valor / 100) * base.momentoX.valor;
-
   const ax = dimensionesBase.anchoX;
   const ay = dimensionesBase.anchoY;
+  const cx = base.anchoColumnaX.valor;
+  const cy = base.anchoColumnaY.valor;
   const d = dimensionesBase.altura - base.recubrimientoHormigon.valor - 0.02;
 
   return (
@@ -44,112 +43,46 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
         />
 
         <FormulaBlock
-          title="Momento Mayorado"
-          tooltip={`P_D: Carga muerta<br/>P_L: Carga viva`}
-          symbolic="M_u = \max \left( 1.4 M_D,\ 1.2 M_D + 1.6 M_L \right)"
-          substituted={`P_u = \\max \\left( 1.4 \\cdot ${MD.toFixed(
-            2
-          )}\\ \\text{kN}, 1.2 \\cdot ${MD.toFixed(
-            2
-          )}\\ \\text{kN} + 1.6 \\cdot ${ML.toFixed(2)}\\ \\text{kN} \\right)`}
-          result={calculoCuantia.momentoMayorado.toFixed(2)}
-          unit="kN"
-        />
-
-        <FormulaBlock
-          title="Excentricidad Mayorada"
-          tooltip={`Pᵤ: Esfuerzo mayorado<br/>aₓ, aᵧ: Dimensiones`}
-          symbolic="e_u = \frac{M_u}{P_u}"
-          substituted={`e_u = \\frac{${calculoCuantia.momentoMayorado.toFixed(
-            2
-          )}\\ \\text{kNm}}{${calculoCuantia.esfuerzoAxilMayorado.toFixed(
-            2
-          )}\\ \\text{kN}}`}
-          result={calculoCuantia.excentricidadMayorada.toFixed(2)}
-          unit="m"
-        />
-        {/* Cargas Mayoradas Descompuestas */}
-        <FormulaBlock
-          title="Carga Mayorada 1"
-          tooltip={`Pᵤ: Esfuerzo axial mayorado<br/>eᵤ: Excentricidad mayorada<br/>aₓ, aᵧ: Dimensiones`}
-          symbolic="q_{u1} = \dfrac{P_u \left(1 + \dfrac{6 \cdot e_u}{a_x}\right)}{a_x \cdot a_y}"
-          substituted={`q_{u1} = \\dfrac{${calculoCuantia.esfuerzoAxilMayorado.toFixed(
-            2
-          )}\\ \\text{kN} \\left(1 + \\dfrac{6\\,\\cdot \\,${calculoCuantia.excentricidadMayorada.toFixed(
-            2
-          )}\\ \\text{m}}{${ax.toFixed(2)}\\ \\text{m}}\\right)}{${ax.toFixed(
-            2
-          )}\\ \\text{m} \\cdot ${ay.toFixed(2)}\\ \\text{m}}`}
-          result={calculoCuantia.cargaMayorada1.toFixed(2)}
-          unit="kN/m²"
-        />
-
-        {/* Cargas Mayoradas Descompuestas */}
-        <FormulaBlock
-          title="Carga Mayorada 2"
-          tooltip={`Pᵤ: Esfuerzo axial mayorado<br/>eᵤ: Excentricidad mayorada<br/>aₓ, aᵧ: Dimensiones`}
-          symbolic="q_{u1} = \dfrac{P_u \left(1 - \dfrac{6 \cdot e_u}{a_x}\right)}{a_x \cdot a_y}"
-          substituted={`q_{u1} = \\dfrac{${calculoCuantia.esfuerzoAxilMayorado.toFixed(
-            2
-          )}\\ \\text{kN} \\left(1 - \\dfrac{6\\,\\cdot \\,${calculoCuantia.excentricidadMayorada.toFixed(
-            2
-          )}\\ \\text{m}}{${ax.toFixed(2)}\\ \\text{m}}\\right)}{${ax.toFixed(
-            2
-          )}\\ \\text{m} \\cdot ${ay.toFixed(2)}\\ \\text{m}}`}
-          result={calculoCuantia.cargaMayorada2.toFixed(2)}
-          unit="kN/m²"
-        />
-
-        <FormulaBlock
           title="Carga Mayorada"
-          tooltip={`qᵤ: Carga mayorada<br/>qᵤ₁, qᵤ₂: Cargas auxiliares<br/>aₓ: Dimensión en X<br/>vₓ: Vuelo en X`}
-          symbolic={`q_{u} = q_{u1} - (q_{u1}  - q_{u2}) \\cdot \\frac{Vₓ}{2 \\cdot aₓ}`}
-          substituted={`q_{u} = ${calculoCuantia.cargaMayorada1.toFixed(
+          tooltip={`Pᵤ: Esfuerzo mayorado<br/>aₓ, aᵧ: Dimensiones`}
+          symbolic="q_u = \frac{P_u}{a_x \cdot a_y}"
+          substituted={`q_u = \\frac{${calculoCuantia.esfuerzoAxilMayorado.toFixed(
             2
-          )}\\ \\text{kN/m²} - 
-    (${calculoCuantia.cargaMayorada1.toFixed(
-      2
-    )} \\ \\text{kN/m²} - ${calculoCuantia.cargaMayorada2.toFixed(
+          )}\\ \\text{kN}}{${ax.toFixed(2)}\\ \\text{m} \\cdot ${ay.toFixed(
             2
-          )} \\ \\text{kN/m²}) \\cdot \\frac{${dimensionesBase.vueloX.toFixed(
-            2
-          )} \\ \\text{m}}{2 \\cdot ${ax.toFixed(2)} \\ \\text{m}}`}
+          )}\\ \\text{m}}`}
           result={calculoCuantia.cargaMayorada.toFixed(2)}
           unit="kN/m²"
         />
 
         <FormulaBlock
           title="Momento Mayorado X"
-          tooltip={`Mᵤₓ: Momento mayorado en X<br/>aᵧ: Dimensión transversal<br/>vₓ: Vuelo en X`}
-          symbolic={`M_{ux} = a_y \\cdot \\left(\\frac{V_{x}}{2}\\right)^2 \\cdot \\frac{q_{u} + 2 \\cdot q_{u1}}{6}`}
-          substituted={`M_{ux} = ${ay.toFixed(2)}\\ \\text{m} \\cdot 
-    \\left(\\frac{${dimensionesBase.vueloX.toFixed(
-      2
-    )}\\ \\text{m}}{2}\\right)^2 \\cdot 
-    \\frac{${calculoCuantia.cargaMayorada.toFixed(
-      2
-    )}\\ \\text{kN/m²} + 2 \\cdot ${calculoCuantia.cargaMayorada1.toFixed(
+          tooltip={`qᵤ: Carga mayorada<br/>aₓ, cₓ: Dimensión y excentricidad<br/>aᵧ: Dimensión transversal`}
+          symbolic="M_{ux} = q_u \cdot \frac{(a_x - c_x)^2}{8} \cdot a_y"
+          substituted={`M_{ux} = ${calculoCuantia.cargaMayorada.toFixed(
             2
-          )}\\ \\text{kN/m²}}{6}`}
+          )}\\ \\text{kN/m}^2 \\cdot \\frac{(${ax.toFixed(
+            2
+          )}\\ \\text{m} - ${cx}\\ \\text{m})^2}{8} \\cdot ${ay.toFixed(
+            2
+          )}\\ \\text{m}`}
           result={calculoCuantia.momentoMayoradoX.toFixed(2)}
-          unit="kN·m"
+          unit="kN · m"
         />
 
         <FormulaBlock
           title="Momento Mayorado Y"
-          tooltip={`Mᵤᵧ: Momento mayorado en Y<br/>aₓ: Dimensión transversal<br/>vᵧ: Vuelo en Y`}
-          symbolic={`M_{uy} = a_x \\cdot \\left(\\frac{V_{y}}{2}\\right)^2 \\cdot \\frac{q_{u1} + q_{u2}}{4}`}
-          substituted={`M_{uy} = ${ax.toFixed(2)}\\ \\text{m} \\cdot 
-    \\left(\\frac{${dimensionesBase.vueloY.toFixed(
-      2
-    )}\\ \\text{m}}{2}\\right)^2 \\cdot 
-    \\frac{${calculoCuantia.cargaMayorada1.toFixed(
-      2
-    )}\\ \\text{kN/m²} + ${calculoCuantia.cargaMayorada2.toFixed(
+          tooltip={`qᵤ: Carga mayorada<br/>aᵧ, cᵧ: Dimensión y excentricidad<br/>aₓ: Dimensión transversal`}
+          symbolic="M_{uy} = q_u \cdot \frac{(a_y - c_y)^2}{8} \cdot a_x"
+          substituted={`M_{uy} = ${calculoCuantia.cargaMayorada.toFixed(
             2
-          )}\\ \\text{kN/m²}}{4}`}
+          )}\\ \\text{kN/m}^2 \\cdot \\frac{(${ay.toFixed(
+            2
+          )}\\ \\text{m} - ${cy}\\ \\text{m})^2}{8} \\cdot ${ax.toFixed(
+            2
+          )}\\ \\text{m}`}
           result={calculoCuantia.momentoMayoradoY.toFixed(2)}
-          unit="kN·m"
+          unit="kN · m"
         />
 
         <FormulaBlock

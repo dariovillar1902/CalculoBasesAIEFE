@@ -11,11 +11,13 @@ import type { BaseHormigonCuantia } from "../../types/BaseHormigonCuantia";
 import type { BaseHormigonVerificacionPunzonado } from "../../types/BaseHormigonVerificacionPunzonado";
 import type { BaseHormigonVerificacionCorte } from "../../types/BaseHormigonVerificacionCorte";
 import type { BaseHormigonVerificaciones } from "../../types/BaseHormigonVerificaciones";
+import type { BaseHormigonEsfuerzos } from "../../types/BaseHormigonEsfuerzos";
 
 interface BaseHormigonResultsState {
   base: BaseHormigon | null;
   dimensionesBase: BaseHormigonDimensiones | null;
-  verificaTensionAdmisible: BaseHormigonVerificaciones | null;
+  esfuerzosBase: BaseHormigonEsfuerzos | null;
+  verificacionesBase: BaseHormigonVerificaciones | null;
   verificaPunzonado: BaseHormigonVerificacionPunzonado | null;
   verificaCorte: BaseHormigonVerificacionCorte | null;
   calculoCuantia: BaseHormigonCuantia | null;
@@ -27,7 +29,8 @@ interface BaseHormigonResultsState {
 const initialState: BaseHormigonResultsState = {
   base: null,
   dimensionesBase: null,
-  verificaTensionAdmisible: null,
+  esfuerzosBase: null,
+  verificacionesBase: null,
   verificaPunzonado: null,
   verificaCorte: null,
   calculoCuantia: null,
@@ -56,13 +59,22 @@ export const fetchDimensionesBase = createAsyncThunk<
   return response.data;
 });
 
-// thunks
-export const fetchVerificaTensionAdmisible = createAsyncThunk<
+export const fetchEsfuerzosBase = createAsyncThunk<
+  BaseHormigonEsfuerzos,
+  number
+>("baseHormigonResults/fetchEsfuerzosBase", async (id) => {
+  const response = await api.get<BaseHormigonEsfuerzos>(
+    `baseshormigon/${id}/esfuerzosBase`
+  );
+  return response.data;
+});
+
+export const fetchVerificacionesBase = createAsyncThunk<
   BaseHormigonVerificaciones,
   number
->("baseHormigonResults/fetchVerificaTensionAdmisible", async (id) => {
+>("baseHormigonResults/fetchVerificacionesBase", async (id) => {
   const response = await api.get<BaseHormigonVerificaciones>(
-    `baseshormigon/${id}/verificaTensionAdmisible`
+    `baseshormigon/${id}/verificacionesBase`
   );
   return response.data;
 });
@@ -151,12 +163,17 @@ const baseHormigonResultsSlice = createSlice({
         }
       )
       .addCase(
-        fetchVerificaTensionAdmisible.fulfilled,
-        (state, action: PayloadAction<BaseHormigonVerificaciones>) => {
-          state.verificaTensionAdmisible = action.payload;
+        fetchEsfuerzosBase.fulfilled,
+        (state, action: PayloadAction<BaseHormigonEsfuerzos>) => {
+          state.esfuerzosBase = action.payload;
         }
       )
-
+      .addCase(
+        fetchVerificacionesBase.fulfilled,
+        (state, action: PayloadAction<BaseHormigonVerificaciones>) => {
+          state.verificacionesBase = action.payload;
+        }
+      )
       .addCase(
         fetchVerificaPunzonado.fulfilled,
         (state, action: PayloadAction<BaseHormigonVerificacionPunzonado>) => {

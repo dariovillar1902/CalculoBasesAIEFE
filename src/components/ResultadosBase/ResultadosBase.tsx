@@ -3,12 +3,13 @@ import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks.ts";
 import {
   fetchDimensionesBase,
-  fetchVerificaTensionAdmisible,
   fetchCalculoCuantia,
   fetchVerificaPunzonado,
   fetchVerificaCorte,
   fetchCalculoArmadura,
   fetchCalculoArmaduraConDiametros,
+  fetchEsfuerzosBase,
+  fetchVerificacionesBase,
 } from "../../store/slices/baseHormigonResultsSlice.ts";
 import "katex/dist/katex.min.css";
 import "./ResultadosBase.scss";
@@ -17,11 +18,12 @@ import DiagramaPlantaBase from "../DiagramaPlantaBase.tsx";
 import DiagramaVistaXBase from "../DiagramaVistaXBase.tsx";
 import DiagramaVistaYBase from "../DiagramaVistaYBase.tsx";
 import FormulasDimensionesBase from "../FormulasDimensionesBase/FormulasDimensionesBase.tsx";
-import FormulasVerificacionTensionAdmisible from "../FormulasVerificacionTensionAdmisible/FormulasVerificacionTensionAdmisible.tsx";
 import FormulasCalculoCuantia from "../FormulasCalculoCuantia/FormulasCalculoCuantia.tsx";
 import FormulasVerificacionPunzonado from "../FormulasVerificacionPunzonado/FormulasVerificacionPunzonado.tsx";
 import FormulasVerificacionCorte from "../FormulasVerificacionCorte/FormulasVerificacionCorte.tsx";
 import FormulasCalculoArmadura from "../FormulasCalculoArmadura/FormulasCalculoArmadura.tsx";
+import FormulasEsfuerzosBase from "../FormulasEsfuerzosBase/FormulasEsfuerzosBase.tsx";
+import FormulasVerificacionesBase from "../FormulasVerificacionesBase/FormulasVerificacionesBase.tsx";
 import {
   exportBaseHormigonCsv,
   exportBaseHormigonExcel,
@@ -43,7 +45,8 @@ const ResultadosBase: React.FC = () => {
 
   const {
     dimensionesBase,
-    verificaTensionAdmisible,
+    esfuerzosBase,
+    verificacionesBase,
     verificaPunzonado,
     verificaCorte,
     calculoCuantia,
@@ -63,34 +66,29 @@ const ResultadosBase: React.FC = () => {
 
   const steps = [
     {
-      action: () => dispatch(fetchDimensionesBase(baseId)),
+      action: () => fetchDimensionesBase(baseId),
       label: "Estimando dimensiones...",
-      key: "dimensionesBase",
     },
     {
-      action: () => dispatch(fetchVerificaTensionAdmisible(baseId)),
-      label: "Verificando tensión admisible...",
-      key: "verificaTensionAdmisible",
+      action: () => fetchEsfuerzosBase(baseId),
+      label: "Obteniendo esfuerzos...",
     },
     {
-      action: () => dispatch(fetchCalculoCuantia(baseId)),
+      action: () => fetchVerificacionesBase(baseId),
+      label: "Ejecutando verificaciones...",
+    },
+    {
+      action: () => fetchCalculoCuantia(baseId),
       label: "Calculando cuantía...",
-      key: "calculoCuantia",
     },
     {
-      action: () => dispatch(fetchVerificaPunzonado(baseId)),
+      action: () => fetchVerificaPunzonado(baseId),
       label: "Verificando punzonado...",
-      key: "verificaPunzonado",
     },
+    { action: () => fetchVerificaCorte(baseId), label: "Verificando corte..." },
     {
-      action: () => dispatch(fetchVerificaCorte(baseId)),
-      label: "Verificando corte...",
-      key: "verificaCorte",
-    },
-    {
-      action: () => dispatch(fetchCalculoArmadura(baseId)),
+      action: () => fetchCalculoArmadura(baseId),
       label: "Calculando armadura...",
-      key: "calculoArmadura",
     },
   ];
 
@@ -104,75 +102,56 @@ const ResultadosBase: React.FC = () => {
         setStatusMessage(steps[i].label);
         setProgress(((i + 1) / steps.length) * 100);
 
-        // 🚀 await dispatch instead of just calling
-        await dispatch(steps[i].action(baseId));
+        try {
+          await dispatch(steps[i].action()).unwrap();
+        } catch (err) {
+          console.error(`Error en paso "${steps[i].label}":`, err);
+          setStatusMessage(`Error en: ${steps[i].label}`);
+          break;
+        }
 
-        // optional: small delay to visualize progress
         await new Promise((res) => setTimeout(res, 500));
+        setCurrentStep(i + 1);
       }
     };
 
     runSteps();
   }, [baseId, automatico, dispatch]);
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (!showResults) setShowResults(true);
     if (currentStep < steps.length) {
       setStatusMessage(steps[currentStep].label);
       setProgress(((currentStep + 1) / steps.length) * 100);
-      steps[currentStep].action();
+
+      try {
+        await dispatch(steps[currentStep].action()).unwrap();
+      } catch (err) {
+        console.error(`Error en paso "${steps[currentStep].label}":`, err);
+        setStatusMessage(`Error en: ${steps[currentStep].label}`);
+      }
+
       setCurrentStep((prev) => prev + 1);
     }
   };
 
-  const handleExportExcel = async () => {
+  const handleExport = async (
+    exportFn: typeof exportBaseHormigonExcel,
+    filename: string
+  ) => {
     try {
-      const resultAction = await dispatch(exportBaseHormigonExcel(baseId));
-      if (exportBaseHormigonExcel.fulfilled.match(resultAction)) {
+      const resultAction = await dispatch(exportFn(baseId));
+      if (exportFn.fulfilled.match(resultAction)) {
         const blob = resultAction.payload;
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "BaseHormigon.xlsx";
+        a.download = filename;
         a.click();
         URL.revokeObjectURL(url);
       }
     } catch {
-      console.error("Exportación fallida");
-    }
-  };
-
-  const handleExportCsv = async () => {
-    try {
-      const resultAction = await dispatch(exportBaseHormigonCsv(baseId));
-      if (exportBaseHormigonCsv.fulfilled.match(resultAction)) {
-        const blob = resultAction.payload;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "BaseHormigon.csv";
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-    } catch {
-      console.error("Exportación CSV fallida");
-    }
-  };
-
-  const handleExportPdf = async () => {
-    try {
-      const resultAction = await dispatch(exportBaseHormigonPdf(baseId));
-      if (exportBaseHormigonPdf.fulfilled.match(resultAction)) {
-        const blob = resultAction.payload;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "BaseHormigon.pdf";
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-    } catch {
-      console.error("Exportación PDF fallida");
+      console.error(`Exportación ${filename} fallida`);
     }
   };
 
@@ -180,23 +159,27 @@ const ResultadosBase: React.FC = () => {
     <div className="resultados-base">
       <div className="export-buttons flex space-x-4 mb-4">
         <button
-          onClick={handleExportExcel}
+          onClick={() =>
+            handleExport(exportBaseHormigonExcel, "BaseHormigon.xlsx")
+          }
           className="icon-btn bg-green-600 hover:bg-green-700"
           title="Exportar a Excel"
         >
           <FontAwesomeIcon icon={faFileExcel} size="lg" />
         </button>
-
         <button
-          onClick={handleExportCsv}
+          onClick={() =>
+            handleExport(exportBaseHormigonCsv, "BaseHormigon.csv")
+          }
           className="icon-btn bg-yellow-600 hover:bg-yellow-700"
           title="Exportar a CSV"
         >
           <FontAwesomeIcon icon={faFileCsv} size="lg" />
         </button>
-
         <button
-          onClick={handleExportPdf}
+          onClick={() =>
+            handleExport(exportBaseHormigonPdf, "BaseHormigon.pdf")
+          }
           className="icon-btn bg-red-600 hover:bg-red-700"
           title="Exportar a PDF"
         >
@@ -213,6 +196,7 @@ const ResultadosBase: React.FC = () => {
         </button>
       )}
 
+      {/* Barras X/Y */}
       <div className="flex space-x-4 items-center mb-4">
         <label className="text-gray-800">
           Diámetro Barras X (mm):
@@ -221,7 +205,7 @@ const ResultadosBase: React.FC = () => {
             onChange={(e) => {
               const newX = Number(e.target.value);
               setBarraX(newX);
-              if (!isNaN(newX) && barraY !== null && !isNaN(barraY)) {
+              if (!isNaN(newX) && barraY !== null) {
                 dispatch(
                   fetchCalculoArmaduraConDiametros({
                     id: baseId,
@@ -243,7 +227,6 @@ const ResultadosBase: React.FC = () => {
             ))}
           </select>
         </label>
-
         <label className="text-gray-800">
           Diámetro Barras Y (mm):
           <select
@@ -251,7 +234,7 @@ const ResultadosBase: React.FC = () => {
             onChange={(e) => {
               const newY = Number(e.target.value);
               setBarraY(newY);
-              if (!isNaN(newY) && barraX !== null && !isNaN(barraX)) {
+              if (!isNaN(newY) && barraX !== null) {
                 dispatch(
                   fetchCalculoArmaduraConDiametros({
                     id: baseId,
@@ -281,103 +264,96 @@ const ResultadosBase: React.FC = () => {
       <div className="progress-bar-container">
         <div className="progress-bar" style={{ width: `${progress}%` }} />
       </div>
-
       <p className="status-message">{statusMessage}</p>
 
+      {/* Diagrams */}
       <div className="diagramas-container">
         {showResults && dimensionesBase && calculoArmadura && (
-          <div className="estructura-diagrama fade-in">
-            <h3> PLANTA </h3>
-            <DiagramaPlantaBase
-              dimensionesBase={dimensionesBase}
-              calculoArmadura={calculoArmadura}
-            />
-          </div>
-        )}
-
-        {showResults && dimensionesBase && calculoArmadura && (
-          <div className="estructura-diagrama fade-in">
-            <h3> VISTA DIRECCIÓN X </h3>
-            <DiagramaVistaXBase
-              dimensionesBase={dimensionesBase}
-              calculoArmadura={calculoArmadura}
-            />
-          </div>
-        )}
-
-        {showResults && dimensionesBase && calculoArmadura && (
-          <div className="estructura-diagrama fade-in">
-            <h3> VISTA DIRECCIÓN Y </h3>
-            <DiagramaVistaYBase
-              dimensionesBase={dimensionesBase}
-              calculoArmadura={calculoArmadura}
-            />
-          </div>
+          <>
+            <div className="estructura-diagrama fade-in">
+              <h3>PLANTA</h3>
+              <DiagramaPlantaBase
+                dimensionesBase={dimensionesBase}
+                calculoArmadura={calculoArmadura}
+              />
+            </div>
+            <div className="estructura-diagrama fade-in">
+              <h3>VISTA DIRECCIÓN X</h3>
+              <DiagramaVistaXBase
+                dimensionesBase={dimensionesBase}
+                calculoArmadura={calculoArmadura}
+              />
+            </div>
+            <div className="estructura-diagrama fade-in">
+              <h3>VISTA DIRECCIÓN Y</h3>
+              <DiagramaVistaYBase
+                dimensionesBase={dimensionesBase}
+                calculoArmadura={calculoArmadura}
+              />
+            </div>
+          </>
         )}
       </div>
+
+      {/* Formulas */}
+      {showResults && dimensionesBase && base && (
+        <FormulasDimensionesBase
+          dimensionesBase={dimensionesBase}
+          base={base}
+        />
+      )}
+      {showResults && esfuerzosBase && dimensionesBase && base && (
+        <FormulasEsfuerzosBase
+          base={base}
+          dimensionesBase={dimensionesBase}
+          esfuerzosBase={esfuerzosBase}
+        />
+      )}
+      {showResults &&
+        verificacionesBase &&
+        esfuerzosBase &&
+        dimensionesBase &&
+        base && (
+          <FormulasVerificacionesBase
+            verificacionesBase={verificacionesBase}
+            esfuerzosBase={esfuerzosBase}
+            base={base}
+            dimensionesBase={dimensionesBase}
+          />
+        )}
+      {showResults && calculoCuantia && dimensionesBase && base && (
+        <FormulasCalculoCuantia
+          calculoCuantia={calculoCuantia}
+          base={base}
+          dimensionesBase={dimensionesBase}
+        />
+      )}
+      {showResults && verificaPunzonado && dimensionesBase && base && (
+        <FormulasVerificacionPunzonado
+          verificaPunzonado={verificaPunzonado}
+          base={base}
+          dimensionesBase={dimensionesBase}
+        />
+      )}
+      {showResults && verificaCorte && dimensionesBase && base && (
+        <FormulasVerificacionCorte
+          verificaCorte={verificaCorte}
+          base={base}
+          dimensionesBase={dimensionesBase}
+        />
+      )}
       {showResults &&
         calculoArmadura &&
-        base &&
+        calculoCuantia &&
         dimensionesBase &&
-        calculoCuantia && (
-          <div className="fade-in formulas-container">
-            <FormulasCalculoArmadura
-              calculoArmadura={calculoArmadura}
-              base={base}
-              dimensionesBase={dimensionesBase}
-              cuantia={calculoCuantia}
-            />
-          </div>
+        base && (
+          <FormulasCalculoArmadura
+            calculoArmadura={calculoArmadura}
+            base={base}
+            dimensionesBase={dimensionesBase}
+            cuantia={calculoCuantia}
+          />
         )}
-
-      {showResults && verificaCorte && base && dimensionesBase && (
-        <div className="fade-in formulas-container">
-          <FormulasVerificacionCorte
-            verificaCorte={verificaCorte}
-            base={base}
-            dimensionesBase={dimensionesBase}
-          />
-        </div>
-      )}
-
-      {showResults && verificaPunzonado && base && dimensionesBase && (
-        <div className="fade-in formulas-container">
-          <FormulasVerificacionPunzonado
-            verificaPunzonado={verificaPunzonado}
-            base={base}
-            dimensionesBase={dimensionesBase}
-          />
-        </div>
-      )}
-
-      {showResults && calculoCuantia && base && dimensionesBase && (
-        <div className="fade-in formulas-container">
-          <FormulasCalculoCuantia
-            calculoCuantia={calculoCuantia}
-            base={base}
-            dimensionesBase={dimensionesBase}
-          />
-        </div>
-      )}
-
-      {showResults && verificaTensionAdmisible && base && dimensionesBase && (
-        <div className="fade-in formulas-container">
-          <FormulasVerificacionTensionAdmisible
-            verificaTensionAdmisible={verificaTensionAdmisible}
-            base={base}
-            dimensionesBase={dimensionesBase}
-          />
-        </div>
-      )}
-
-      {showResults && dimensionesBase && base && (
-        <div className="fade-in formulas-container">
-          <FormulasDimensionesBase
-            dimensionesBase={dimensionesBase}
-            base={base}
-          />
-        </div>
-      )}
     </div>
   );
 };

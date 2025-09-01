@@ -90,7 +90,8 @@
   .cuantia-container,
   .punzonado-container,
   .corte-container,
-  .armadura-container {
+  .armadura-container,
+  .esfuerzos-container {
     text-align: center;
     margin-bottom: 20px;
   }
@@ -100,7 +101,8 @@
   .cuantia-title,
   .punzonado-title,
   .corte-title,
-  .armadura-title {
+  .armadura-title,
+  .esfuerzos-title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 15px;
@@ -111,7 +113,8 @@
   .cuantia-item,
   .punzonado-item,
   .corte-item,
-  .armadura-item {
+  .armadura-item,
+  .esfuerzos-item {
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -124,7 +127,8 @@
   .cuantia-item h3,
   .punzonado-item h3,
   .corte-item h3,
-  .armadura-item h3 {
+  .armadura-item h3,
+  .esfuerzos-item h3 {
     font-weight: bold;
     font-size: 18px;
   }
@@ -134,7 +138,8 @@
   .cuantia-item p,
   .punzonado-item p,
   .corte-item p,
-  .armadura-item p {
+  .armadura-item p,
+  .esfuerzos-item p {
     font-size: 16px;
   }
 

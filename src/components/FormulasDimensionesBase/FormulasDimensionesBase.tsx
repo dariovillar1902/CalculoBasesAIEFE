@@ -12,7 +12,7 @@ const FormulasDimensionesBase: React.FC<Props> = ({
   dimensionesBase,
   base,
 }) => {
-  const { anchoX, anchoY, altura, vueloX, vueloY } = dimensionesBase;
+  const { area, anchoX, anchoY, altura, vueloX, vueloY } = dimensionesBase;
 
   return (
     <div className="katex-container">
@@ -22,62 +22,70 @@ const FormulasDimensionesBase: React.FC<Props> = ({
         <FormulaBlock
           title="Área Necesaria"
           tooltip="Área necesaria para soportar la carga de diseño con la tensión admisible"
-          symbolic="A_{nec} = \frac{1.10 \cdot P}{0.65 \cdot 1.25 \cdot q_{adm}}"
-          substituted={`A_{nec} = \\frac{1.10 \\cdot ${base.esfuerzoAxil.valor.toFixed(
+          symbolic="A = \frac{1.05 \cdot P}{q_{adm} - \gamma \cdot h_f}"
+          substituted={`A = \\frac{1.05 \\cdot ${base.esfuerzoAxil.valor.toFixed(
             2
-          )}\\ \\text{kN}}{0.65 \\cdot 1.25 \\cdot ${base.cargaAdmisible.valor.toFixed(
+          )}\\ \\text{kN}}{${base.cargaAdmisible.valor.toFixed(
             2
-          )}\\ \\text{kN/m²}}`}
-          result={dimensionesBase.areaNecesaria.toFixed(2)}
+          )}\\ \\text{kN/m}^2 - ${base.pesoEspecificoSuelo.valor.toFixed(
+            2
+          )}\\ \\text{kN/m}^3 \\cdot ${base.nivelFundacion.valor.toFixed(
+            2
+          )}\\ \\text{m}}`}
+          result={area.toFixed(2)}
           unit="m²"
         />
 
         <FormulaBlock
           title="Ancho X"
-          tooltip="Dimensión X siguiendo relación AnchoX / AnchoY = 1.5"
-          symbolic="a_x = 1.5 \cdot a_y"
-          substituted={`a_x = 1.5 \\cdot ${dimensionesBase.anchoY.toFixed(
+          tooltip="Ancho X calculado considerando diferencia de columnas"
+          symbolic="a_x = \sqrt{A + \frac{(c_x - c_y)^2}{4}} + \frac{c_x - c_y}{2}"
+          substituted={`a_x = \\sqrt{${area.toFixed(
             2
-          )}\\ \\text{m}`}
+          )}\\ \\text{m}^2 + \\frac{(${base.anchoColumnaX.valor.toFixed(
+            2
+          )}\\ \\text{m} - ${base.anchoColumnaY.valor.toFixed(
+            2
+          )}\\ \\text{m})^2}{4}} + \\frac{${base.anchoColumnaX.valor.toFixed(
+            2
+          )}\\ \\text{m} - ${base.anchoColumnaY.valor.toFixed(
+            2
+          )}\\ \\text{m}}{2}`}
           result={anchoX.toFixed(2)}
           unit="m"
         />
 
         <FormulaBlock
           title="Ancho Y"
-          tooltip="Dimensión Y siguiendo relación AnchoX / AnchoY = 1.5"
-          symbolic="a_y = \sqrt{\frac{A_{nec}}{1.5}}"
-          substituted={`a_y = \\sqrt{${dimensionesBase.areaNecesaria.toFixed(
+          tooltip="Ancho Y calculado considerando diferencia de columnas"
+          symbolic="a_y = \sqrt{A + \frac{(c_x - c_y)^2}{4}} - \frac{c_x - c_y}{2}"
+          substituted={`a_y = \\sqrt{${area.toFixed(
             2
-          )}\\ \\text{m²} / 1.5} = ${anchoY.toFixed(2)}\\ \\text{m}`}
+          )}\\ \\text{m}^2 + \\frac{(${base.anchoColumnaX.valor.toFixed(
+            2
+          )}\\ \\text{m} - ${base.anchoColumnaY.valor.toFixed(
+            2
+          )}\\ \\text{m})^2}{4}} - \\frac{${base.anchoColumnaX.valor.toFixed(
+            2
+          )}\\ \\text{m} - ${base.anchoColumnaY.valor.toFixed(
+            2
+          )}\\ \\text{m}}{2}`}
           result={anchoY.toFixed(2)}
           unit="m"
         />
 
         <FormulaBlock
-          title="Altura mínima"
+          title="Altura"
           tooltip="Altura mínima según vuelos: max(VueloX/5, VueloY/5, 0.25 m)"
-          symbolic="h = \max(V_x/5, V_y/5, 0.25)"
-          substituted={`h = \\max(${vueloX.toFixed(
+          symbolic="h = \max(\frac{V_x}{5}, \frac{V_y}{5}, 0.25 \ m)"
+          substituted={`h = \\max\\left(\\frac{${vueloX.toFixed(
             2
-          )}\\ \\text{m}/5, ${vueloY.toFixed(
+          )}\\ \\text{m}}{5}, \\frac{${vueloY.toFixed(
             2
-          )}\\ \\text{m}/5, 0.25\\ \\text{m}) = ${altura.toFixed(
-            2
-          )}\\ \\text{m}`}
+          )}\\ \\text{m}}{5}, 0.25\\ \\text{m}\\right)`}
           result={altura.toFixed(2)}
           unit="m"
         />
-
-        {/*         <FormulaBlock
-          title="Verifica Vuelos"
-          tooltip="Verifica que la diferencia de vuelos sea menor a 0.2 m"
-          symbolic={`|V_x - V_y| < 0.2\\ \\text{m}`}
-          substituted={`|V_x - V_y| = ${Math.abs(vueloX - vueloY).toFixed(
-            2
-          )}\\ \\text{m}`}
-          result={verificaVuelos ? "Sí" : "No"}
-        /> */}
       </div>
     </div>
   );
