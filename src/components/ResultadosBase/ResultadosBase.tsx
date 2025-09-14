@@ -31,6 +31,8 @@ import {
 } from "../../store/slices/baseHormigonExcelSlice.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faArrowDownUpAcrossLine,
+  faArrowsUpDown,
   faFileCsv,
   faFileExcel,
   faFilePdf,
@@ -59,6 +61,8 @@ const ResultadosBase: React.FC = () => {
 
   const [barraX, setBarraX] = useState<number | null>(null);
   const [barraY, setBarraY] = useState<number | null>(null);
+
+  const [reverseFormulas, setReverseFormulas] = useState(false);
 
   const base = useAppSelector((state) =>
     state.baseHormigon.data.find((b) => b.id === baseId)
@@ -256,6 +260,13 @@ const ResultadosBase: React.FC = () => {
             ))}
           </select>
         </label>
+        <button
+          onClick={() => setReverseFormulas((prev) => !prev)}
+          className="ml-4 p-2 rounded-md bg-gray-200 hover:bg-gray-300 shadow"
+          title="Invertir orden de resultados"
+        >
+          <FontAwesomeIcon icon={faArrowDownUpAcrossLine} />
+        </button>
       </div>
 
       <h2>Resultados</h2>
@@ -266,94 +277,186 @@ const ResultadosBase: React.FC = () => {
       </div>
       <p className="status-message">{statusMessage}</p>
 
-      {/* Diagrams */}
-      <div className="diagramas-container">
-        {showResults && dimensionesBase && calculoArmadura && (
-          <>
-            <div className="estructura-diagrama fade-in">
-              <h3>PLANTA</h3>
-              <DiagramaPlantaBase
+      {/* Conditional formulas order */}
+      {reverseFormulas ? (
+        <>
+          <div className="diagramas-container">
+            {showResults && dimensionesBase && calculoArmadura && base && (
+              <>
+                <div className="estructura-diagrama fade-in">
+                  <h3>PLANTA</h3>
+                  <DiagramaPlantaBase
+                    dimensionesBase={dimensionesBase}
+                    calculoArmadura={calculoArmadura}
+                    baseHormigon={base}
+                  />
+                </div>
+                <div className="estructura-diagrama fade-in">
+                  <h3>VISTA DIRECCIÓN X</h3>
+                  <DiagramaVistaXBase
+                    dimensionesBase={dimensionesBase}
+                    baseHormigon={base}
+                  />
+                </div>
+                <div className="estructura-diagrama fade-in">
+                  <h3>VISTA DIRECCIÓN Y</h3>
+                  <DiagramaVistaYBase
+                    dimensionesBase={dimensionesBase}
+                    baseHormigon={base}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+          {showResults && (
+            <>
+              {calculoArmadura && calculoCuantia && dimensionesBase && base && (
+                <FormulasCalculoArmadura
+                  calculoArmadura={calculoArmadura}
+                  base={base}
+                  dimensionesBase={dimensionesBase}
+                  cuantia={calculoCuantia}
+                />
+              )}
+              {verificaCorte && dimensionesBase && base && (
+                <FormulasVerificacionCorte
+                  verificaCorte={verificaCorte}
+                  base={base}
+                  dimensionesBase={dimensionesBase}
+                />
+              )}
+              {verificaPunzonado && dimensionesBase && base && (
+                <FormulasVerificacionPunzonado
+                  verificaPunzonado={verificaPunzonado}
+                  base={base}
+                  dimensionesBase={dimensionesBase}
+                />
+              )}
+              {calculoCuantia && dimensionesBase && base && (
+                <FormulasCalculoCuantia
+                  calculoCuantia={calculoCuantia}
+                  base={base}
+                  dimensionesBase={dimensionesBase}
+                />
+              )}
+              {verificacionesBase &&
+                esfuerzosBase &&
+                dimensionesBase &&
+                base && (
+                  <FormulasVerificacionesBase
+                    verificacionesBase={verificacionesBase}
+                    esfuerzosBase={esfuerzosBase}
+                    base={base}
+                    dimensionesBase={dimensionesBase}
+                  />
+                )}
+              {esfuerzosBase && dimensionesBase && base && (
+                <FormulasEsfuerzosBase
+                  base={base}
+                  dimensionesBase={dimensionesBase}
+                  esfuerzosBase={esfuerzosBase}
+                />
+              )}
+              {dimensionesBase && base && (
+                <FormulasDimensionesBase
+                  dimensionesBase={dimensionesBase}
+                  base={base}
+                />
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {/* Formulas first, then diagrams (current order) */}
+          {showResults && dimensionesBase && base && (
+            <FormulasDimensionesBase
+              dimensionesBase={dimensionesBase}
+              base={base}
+            />
+          )}
+          {showResults && esfuerzosBase && dimensionesBase && base && (
+            <FormulasEsfuerzosBase
+              base={base}
+              dimensionesBase={dimensionesBase}
+              esfuerzosBase={esfuerzosBase}
+            />
+          )}
+          {showResults &&
+            verificacionesBase &&
+            esfuerzosBase &&
+            dimensionesBase &&
+            base && (
+              <FormulasVerificacionesBase
+                verificacionesBase={verificacionesBase}
+                esfuerzosBase={esfuerzosBase}
+                base={base}
                 dimensionesBase={dimensionesBase}
-                calculoArmadura={calculoArmadura}
               />
-            </div>
-            <div className="estructura-diagrama fade-in">
-              <h3>VISTA DIRECCIÓN X</h3>
-              <DiagramaVistaXBase
+            )}
+          {showResults && calculoCuantia && dimensionesBase && base && (
+            <FormulasCalculoCuantia
+              calculoCuantia={calculoCuantia}
+              base={base}
+              dimensionesBase={dimensionesBase}
+            />
+          )}
+          {showResults && verificaPunzonado && dimensionesBase && base && (
+            <FormulasVerificacionPunzonado
+              verificaPunzonado={verificaPunzonado}
+              base={base}
+              dimensionesBase={dimensionesBase}
+            />
+          )}
+          {showResults && verificaCorte && dimensionesBase && base && (
+            <FormulasVerificacionCorte
+              verificaCorte={verificaCorte}
+              base={base}
+              dimensionesBase={dimensionesBase}
+            />
+          )}
+          {showResults &&
+            calculoArmadura &&
+            calculoCuantia &&
+            dimensionesBase &&
+            base && (
+              <FormulasCalculoArmadura
+                calculoArmadura={calculoArmadura}
+                base={base}
                 dimensionesBase={dimensionesBase}
-                calculoArmadura={calculoArmadura}
+                cuantia={calculoCuantia}
               />
-            </div>
-            <div className="estructura-diagrama fade-in">
-              <h3>VISTA DIRECCIÓN Y</h3>
-              <DiagramaVistaYBase
-                dimensionesBase={dimensionesBase}
-                calculoArmadura={calculoArmadura}
-              />
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Formulas */}
-      {showResults && dimensionesBase && base && (
-        <FormulasDimensionesBase
-          dimensionesBase={dimensionesBase}
-          base={base}
-        />
+            )}
+          <div className="diagramas-container">
+            {showResults && dimensionesBase && calculoArmadura && base && (
+              <>
+                <div className="estructura-diagrama fade-in">
+                  <h3>PLANTA</h3>
+                  <DiagramaPlantaBase
+                    dimensionesBase={dimensionesBase}
+                    calculoArmadura={calculoArmadura}
+                    baseHormigon={base}
+                  />
+                </div>
+                <div className="estructura-diagrama fade-in">
+                  <h3>VISTA DIRECCIÓN X</h3>
+                  <DiagramaVistaXBase
+                    dimensionesBase={dimensionesBase}
+                    baseHormigon={base}
+                  />
+                </div>
+                <div className="estructura-diagrama fade-in">
+                  <h3>VISTA DIRECCIÓN Y</h3>
+                  <DiagramaVistaYBase
+                    dimensionesBase={dimensionesBase}
+                    baseHormigon={base}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </>
       )}
-      {showResults && esfuerzosBase && dimensionesBase && base && (
-        <FormulasEsfuerzosBase
-          base={base}
-          dimensionesBase={dimensionesBase}
-          esfuerzosBase={esfuerzosBase}
-        />
-      )}
-      {showResults &&
-        verificacionesBase &&
-        esfuerzosBase &&
-        dimensionesBase &&
-        base && (
-          <FormulasVerificacionesBase
-            verificacionesBase={verificacionesBase}
-            esfuerzosBase={esfuerzosBase}
-            base={base}
-            dimensionesBase={dimensionesBase}
-          />
-        )}
-      {showResults && calculoCuantia && dimensionesBase && base && (
-        <FormulasCalculoCuantia
-          calculoCuantia={calculoCuantia}
-          base={base}
-          dimensionesBase={dimensionesBase}
-        />
-      )}
-      {showResults && verificaPunzonado && dimensionesBase && base && (
-        <FormulasVerificacionPunzonado
-          verificaPunzonado={verificaPunzonado}
-          base={base}
-          dimensionesBase={dimensionesBase}
-        />
-      )}
-      {showResults && verificaCorte && dimensionesBase && base && (
-        <FormulasVerificacionCorte
-          verificaCorte={verificaCorte}
-          base={base}
-          dimensionesBase={dimensionesBase}
-        />
-      )}
-      {showResults &&
-        calculoArmadura &&
-        calculoCuantia &&
-        dimensionesBase &&
-        base && (
-          <FormulasCalculoArmadura
-            calculoArmadura={calculoArmadura}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            cuantia={calculoCuantia}
-          />
-        )}
     </div>
   );
 };

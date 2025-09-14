@@ -1,22 +1,23 @@
 import React, { useRef } from "react";
 import { Stage, Layer, Rect, Line, Text } from "react-konva";
 import type { BaseHormigonDimensiones } from "../types/BaseHormigonDimensiones";
-import type { BaseHormigonArmadura } from "../types/BaseHormigonArmadura";
+import type { BaseHormigon } from "../types/BaseHormigon";
 
 const DiagramaVistaXBase: React.FC<{
   dimensionesBase: BaseHormigonDimensiones;
-  calculoArmadura: BaseHormigonArmadura;
-}> = ({ dimensionesBase, calculoArmadura }) => {
+  baseHormigon: BaseHormigon;
+}> = ({ dimensionesBase, baseHormigon }) => {
   const stageRef = useRef(null);
   const scaleFactor = 100;
-  const width = 600;
+  const width = 500;
   const height = 400;
 
   const startX = (width - dimensionesBase.anchoX * scaleFactor) / 2;
-  const startY = (height - 2.5 * scaleFactor) / 2;
+  const startY = (height - baseHormigon.nivelFundacion.valor * scaleFactor) / 2;
 
-  const smallRectWidth = 0.25 * scaleFactor;
-  const smallRectHeight = (2.5 - dimensionesBase.altura) * scaleFactor;
+  const smallRectWidth = baseHormigon.anchoColumnaX.valor * scaleFactor;
+  const smallRectHeight =
+    (baseHormigon.nivelFundacion.valor - dimensionesBase.altura) * scaleFactor;
 
   const largeRectWidth = dimensionesBase.anchoX * scaleFactor;
   const largeRectHeight = dimensionesBase.altura * scaleFactor;
@@ -28,7 +29,6 @@ const DiagramaVistaXBase: React.FC<{
   return (
     <Stage width={width} height={height} ref={stageRef}>
       <Layer>
-        {/* Small Rectangle */}
         <Rect
           x={startX + (largeRectWidth - smallRectWidth) / 2}
           y={startY}
@@ -39,7 +39,6 @@ const DiagramaVistaXBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Large Rectangle */}
         <Rect
           x={startX}
           y={startY + smallRectHeight}
@@ -50,14 +49,12 @@ const DiagramaVistaXBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Horizontal Blue Line inside the Large Rectangle */}
         <Line
           points={[leftX, lineY, rightX, lineY]}
           stroke="blue"
           strokeWidth={2}
         />
 
-        {/* Vertical Blue Lines at both ends */}
         <Line
           points={[leftX, lineY, leftX, lineY - 0.05 * scaleFactor]}
           stroke="blue"
@@ -69,7 +66,6 @@ const DiagramaVistaXBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Horizontal Line Below Large Rectangle */}
         <Line
           points={[
             startX,
@@ -81,7 +77,6 @@ const DiagramaVistaXBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Text Below Large Rectangle */}
         <Text
           x={startX}
           y={startY + smallRectHeight + largeRectHeight + 25}
@@ -92,7 +87,6 @@ const DiagramaVistaXBase: React.FC<{
           align="center"
         />
 
-        {/* Vertical Line to the Right of Large Rectangle */}
         <Line
           points={[
             startX + largeRectWidth + 10,
@@ -104,7 +98,6 @@ const DiagramaVistaXBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Text to the Right of Large Rectangle */}
         <Text
           x={startX + largeRectWidth + 20}
           y={startY + smallRectHeight + largeRectHeight / 2}
@@ -115,7 +108,6 @@ const DiagramaVistaXBase: React.FC<{
           align="center"
         />
 
-        {/* Horizontal Line Above Small Rectangle */}
         <Line
           points={[
             startX + (largeRectWidth - smallRectWidth) / 2,
@@ -127,17 +119,15 @@ const DiagramaVistaXBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Text Above Small Rectangle */}
         <Text
           x={startX + (largeRectWidth - smallRectWidth) / 2.5}
           y={startY - 30}
-          text={`cx = 0.25 m`}
+          text={`cx = ${baseHormigon.anchoColumnaX.valor} m`}
           fontSize={16}
           fill="black"
           align="center"
         />
 
-        {/* Extended Vertical Line Above Large Rectangle */}
         <Line
           points={[
             startX + largeRectWidth + 10,
@@ -149,11 +139,12 @@ const DiagramaVistaXBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Text Centered Vertically with Small Rectangle */}
         <Text
           x={startX + largeRectWidth + 15}
           y={startY + smallRectHeight / 2 - 10}
-          text={`NSZ = -1.95 m`}
+          text={`NSZ = -${
+            baseHormigon.nivelFundacion.valor - dimensionesBase.altura
+          } m`}
           fontSize={16}
           fill="black"
           align="center"

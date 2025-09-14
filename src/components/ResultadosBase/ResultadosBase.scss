@@ -5,9 +5,18 @@
   margin-top: 20px;
   padding: 10px;
   border-radius: 5px;
-  display: inline-block;
+  display: block;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-  width: 80%;
+  width: 85%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+
+  .katex-display {
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
+  }
 
   .katex,
   p,
@@ -172,5 +181,26 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.dimensiones-item {
+  display: flex;
+  flex-wrap: wrap; // allow wrapping
+  gap: 20px;
+  justify-content: center;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+
+  .katex-display {
+    flex: 1 1 100%; // let each formula take full width if needed
+    white-space: normal;
+  }
+
+  &:last-child {
+    border-bottom: none; // remove from last block
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 }

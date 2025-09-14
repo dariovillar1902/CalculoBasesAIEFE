@@ -2,43 +2,45 @@ import React, { useEffect, useRef } from "react";
 import { Stage, Layer, Rect, Line, Text } from "react-konva";
 import type { BaseHormigonDimensiones } from "../types/BaseHormigonDimensiones";
 import type { BaseHormigonArmadura } from "../types/BaseHormigonArmadura";
+import type { BaseHormigon } from "../types/BaseHormigon";
 
 const DiagramaPlantaBase: React.FC<{
   dimensionesBase: BaseHormigonDimensiones;
   calculoArmadura: BaseHormigonArmadura;
-}> = ({ dimensionesBase, calculoArmadura }) => {
+  baseHormigon: BaseHormigon;
+}> = ({ dimensionesBase, calculoArmadura, baseHormigon }) => {
   const stageRef = useRef(null);
   const scaleFactor = 100;
-  const width = 600;
+  const width = 500;
   const height = 400;
 
   const startX = (width - dimensionesBase.anchoX * scaleFactor) / 2;
   const startY = (height - dimensionesBase.anchoY * scaleFactor) / 2;
-  const spacingY =
-    (dimensionesBase.anchoY * scaleFactor) /
-    (calculoArmadura.cantidadBarrasX - 1); // Even spacing within rectangle height
-  const lines = Array.from(
-    { length: calculoArmadura.cantidadBarrasX },
-    (_, i) => startY + i * spacingY
-  );
+  const ay_cm = dimensionesBase.anchoY * 100;
+  const ax_cm = dimensionesBase.anchoX * 100;
 
-  const spacingX =
-    (dimensionesBase.anchoX * scaleFactor) /
-    (calculoArmadura.cantidadBarrasY - 1); // Even spacing across width
+  const sx_cm = calculoArmadura.separacionBarrasX;
+  const sy_cm = calculoArmadura.separacionBarrasY;
+
+  const Nx = Math.floor(ay_cm / sx_cm) + 1;
+  const Ny = Math.floor(ax_cm / sy_cm) + 1;
+
+  const spacingY = (dimensionesBase.anchoY * scaleFactor) / (Nx - 1);
+  const spacingX = (dimensionesBase.anchoX * scaleFactor) / (Ny - 1);
+
+  const lines = Array.from({ length: Nx }, (_, i) => startY + i * spacingY);
   const verticalLines = Array.from(
-    { length: calculoArmadura.cantidadBarrasY },
+    { length: Ny },
     (_, i) => startX + i * spacingX
   );
 
   useEffect(() => {
     if (!dimensionesBase || !calculoArmadura) return;
-    // Handle any updates if necessary
   }, [dimensionesBase, calculoArmadura]);
 
   return (
     <Stage width={width} height={height} ref={stageRef}>
       <Layer>
-        {/* Rectangle */}
         <Rect
           x={(width - dimensionesBase.anchoX * scaleFactor) / 2}
           y={(height - dimensionesBase.anchoY * scaleFactor) / 2}
@@ -49,7 +51,6 @@ const DiagramaPlantaBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Horizontal blue lines inside the rectangle */}
         {lines.map((yPosition, index) => (
           <Line
             key={index}
@@ -64,7 +65,6 @@ const DiagramaPlantaBase: React.FC<{
           />
         ))}
 
-        {/* Vertical blue lines inside the rectangle */}
         {verticalLines.map((xPosition, index) => (
           <Line
             key={`v-${index}`}
@@ -79,7 +79,6 @@ const DiagramaPlantaBase: React.FC<{
           />
         ))}
 
-        {/* Horizontal line below the rectangle */}
         <Line
           points={[
             (width - dimensionesBase.anchoX * scaleFactor) / 2,
@@ -96,50 +95,47 @@ const DiagramaPlantaBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Centered text for "ax" below horizontal line */}
         <Text
-          x={(width - dimensionesBase.anchoX * scaleFactor) / 2} // Aligning to the left of the line
+          x={(width - dimensionesBase.anchoX * scaleFactor) / 2}
           y={
             (height - dimensionesBase.anchoY * scaleFactor) / 2 +
             dimensionesBase.anchoY * scaleFactor +
             30
-          } // Positioning below the line
-          width={dimensionesBase.anchoX * scaleFactor} // Ensuring centering
+          }
+          width={dimensionesBase.anchoX * scaleFactor}
           text={`ax = ${dimensionesBase.anchoX} m`}
           fontSize={16}
           fill="black"
           align="center"
         />
 
-        {/* Vertical line to the right of the rectangle */}
         <Line
           points={[
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
               dimensionesBase.anchoX * scaleFactor +
-              10, // Right of rectangle + 10px space
-            (height - dimensionesBase.anchoY * scaleFactor) / 2, // Top aligned with rectangle
+              10,
+            (height - dimensionesBase.anchoY * scaleFactor) / 2,
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
               dimensionesBase.anchoX * scaleFactor +
-              10, // Same X
+              10,
             (height - dimensionesBase.anchoY * scaleFactor) / 2 +
-              dimensionesBase.anchoY * scaleFactor, // Bottom aligned with rectangle
+              dimensionesBase.anchoY * scaleFactor,
           ]}
           stroke="black"
           strokeWidth={2}
         />
 
-        {/* Centered text for "ay" to the right of vertical line */}
         <Text
           x={
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
             dimensionesBase.anchoX * scaleFactor +
             20
-          } // Placed to the right of the vertical line
+          }
           y={
             (height - dimensionesBase.anchoY * scaleFactor) / 2 +
             (dimensionesBase.anchoY * scaleFactor) / 2
-          } // Centered vertically
-          width={100} // Setting a width to properly align
+          }
+          width={100}
           text={`ay = ${dimensionesBase.anchoY} m`}
           fontSize={16}
           fill="black"
@@ -149,41 +145,51 @@ const DiagramaPlantaBase: React.FC<{
         <Rect
           x={
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
-            (dimensionesBase.anchoX * scaleFactor - 0.4 * scaleFactor) / 2
+            (dimensionesBase.anchoX * scaleFactor -
+              baseHormigon.anchoColumnaX.valor * scaleFactor) /
+              2
           }
           y={
             (height - dimensionesBase.anchoY * scaleFactor) / 2 +
-            (dimensionesBase.anchoY * scaleFactor - 0.25 * scaleFactor) / 2
+            (dimensionesBase.anchoY * scaleFactor -
+              baseHormigon.anchoColumnaY.valor * scaleFactor) /
+              2
           }
-          width={0.4 * scaleFactor}
-          height={0.25 * scaleFactor}
+          width={baseHormigon.anchoColumnaX.valor * scaleFactor}
+          height={baseHormigon.anchoColumnaY.valor * scaleFactor}
           fill="gray"
           stroke="black"
           strokeWidth={2}
         />
 
-        {/* Horizontal line below the inner rectangle */}
         <Line
           points={[
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
-              (dimensionesBase.anchoX * scaleFactor - 0.4 * scaleFactor) / 2,
+              (dimensionesBase.anchoX * scaleFactor -
+                baseHormigon.anchoColumnaX.valor * scaleFactor) /
+                2,
             (height - dimensionesBase.anchoY * scaleFactor) / 2 +
-              (dimensionesBase.anchoY * scaleFactor - 0.25 * scaleFactor) / 2 +
-              0.25 * scaleFactor +
+              (dimensionesBase.anchoY * scaleFactor -
+                baseHormigon.anchoColumnaY.valor * scaleFactor) /
+                2 +
+              baseHormigon.anchoColumnaY.valor * scaleFactor +
               10,
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
-              (dimensionesBase.anchoX * scaleFactor - 0.4 * scaleFactor) / 2 +
-              0.4 * scaleFactor,
+              (dimensionesBase.anchoX * scaleFactor -
+                baseHormigon.anchoColumnaX.valor * scaleFactor) /
+                2 +
+              baseHormigon.anchoColumnaX.valor * scaleFactor,
             (height - dimensionesBase.anchoY * scaleFactor) / 2 +
-              (dimensionesBase.anchoY * scaleFactor - 0.25 * scaleFactor) / 2 +
-              0.25 * scaleFactor +
+              (dimensionesBase.anchoY * scaleFactor -
+                baseHormigon.anchoColumnaY.valor * scaleFactor) /
+                2 +
+              baseHormigon.anchoColumnaY.valor * scaleFactor +
               10,
           ]}
           stroke="black"
           strokeWidth={2}
         />
 
-        {/* Text below the inner rectangle */}
         <Text
           x={
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
@@ -196,13 +202,12 @@ const DiagramaPlantaBase: React.FC<{
             0.25 * scaleFactor +
             20
           }
-          text={`cx = 0.4 m`}
+          text={`cx = ${baseHormigon.anchoColumnaX.valor} m`}
           fontSize={16}
           fill="black"
           align="center"
         />
 
-        {/* Vertical line to the right of the inner rectangle */}
         <Line
           points={[
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
@@ -223,7 +228,6 @@ const DiagramaPlantaBase: React.FC<{
           strokeWidth={2}
         />
 
-        {/* Text to the right of the inner rectangle */}
         <Text
           x={
             (width - dimensionesBase.anchoX * scaleFactor) / 2 +
@@ -237,7 +241,7 @@ const DiagramaPlantaBase: React.FC<{
             (0.25 * scaleFactor) / 4
           }
           width={100}
-          text={`cy = 0.25 m`}
+          text={`cy = ${baseHormigon.anchoColumnaY.valor} m`}
           fontSize={16}
           fill="black"
           align="center"

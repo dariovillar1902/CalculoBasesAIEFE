@@ -17,23 +17,6 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
 }) => {
   const { anchoX: b_x, anchoY: b_y, altura: h } = dimensionesBase;
 
-  // Esfuerzo promedio
-  const N_total =
-    base.esfuerzoAxil.valor +
-    b_x * b_y * h * base.pesoEspecificoHormigon.valor +
-    b_x *
-      b_y *
-      (base.nivelFundacion.valor - h) *
-      base.pesoEspecificoSuelo.valor;
-
-  const e_x = base.momentoX.valor / N_total;
-  const e_y = base.momentoY.valor / N_total;
-
-  const sigma_max_x = (N_total / (b_x * b_y)) * (1 + (6 * e_x) / b_x);
-  const sigma_min_x = (N_total / (b_x * b_y)) * (1 - (6 * e_x) / b_x);
-  const sigma_max_y = (N_total / (b_x * b_y)) * (1 + (6 * e_y) / b_y);
-  const sigma_min_y = (N_total / (b_x * b_y)) * (1 - (6 * e_y) / b_y);
-
   return (
     <div className="katex-container">
       <div className="esfuerzos-container">

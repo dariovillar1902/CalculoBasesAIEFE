@@ -337,9 +337,9 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
             2
           )}\\ m} + \\frac{6 \\cdot ${momentoX.toFixed(
             2
-          )}\\ kN·m}{${b_x.toFixed(2)}\\ m \\cdot ${b_y.toFixed(
+          )}\\ kN·m}{${b_x.toFixed(2)}\\ m \\cdot (${b_y.toFixed(
             2
-          )}^2\\ m^2} + \\frac{6 \\cdot ${momentoY.toFixed(
+          )})^2\\ m^2} + \\frac{6 \\cdot ${momentoY.toFixed(
             2
           )}\\ kN·m}{${b_y.toFixed(2)}\\ m \\cdot (${b_x.toFixed(
             2
@@ -360,9 +360,9 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
             2
           )}\\ m} - \\frac{6 \\cdot ${momentoX.toFixed(
             2
-          )}\\ kN·m}{${b_x.toFixed(2)}\\ m \\cdot ${b_y.toFixed(
+          )}\\ kN·m}{${b_x.toFixed(2)}\\ m \\cdot (${b_y.toFixed(
             2
-          )}^2\\ m^2} - \\frac{6 \\cdot ${momentoY.toFixed(
+          )})^2\\ m^2} - \\frac{6 \\cdot ${momentoY.toFixed(
             2
           )}\\ kN·m}{${b_y.toFixed(2)}\\ m \\cdot (${b_x.toFixed(
             2
