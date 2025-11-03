@@ -12,6 +12,7 @@ import type { BaseHormigonVerificacionPunzonado } from "../../types/BaseHormigon
 import type { BaseHormigonVerificacionCorte } from "../../types/BaseHormigonVerificacionCorte";
 import type { BaseHormigonVerificaciones } from "../../types/BaseHormigonVerificaciones";
 import type { BaseHormigonEsfuerzos } from "../../types/BaseHormigonEsfuerzos";
+import type { BaseHormigonComputo } from "../../types/BaseHormigonComputo";
 
 interface BaseHormigonResultsState {
   base: BaseHormigon | null;
@@ -22,6 +23,7 @@ interface BaseHormigonResultsState {
   verificaCorte: BaseHormigonVerificacionCorte | null;
   calculoCuantia: BaseHormigonCuantia | null;
   calculoArmadura: BaseHormigonArmadura | null;
+  computo: BaseHormigonComputo | null;
   loading: boolean;
   error: string | null;
 }
@@ -35,6 +37,7 @@ const initialState: BaseHormigonResultsState = {
   verificaCorte: null,
   calculoCuantia: null,
   calculoArmadura: null,
+  computo: null,
   loading: false,
   error: null,
 };
@@ -98,6 +101,16 @@ export const fetchCalculoArmadura = createAsyncThunk<
   );
   return response.data;
 });
+
+export const fetchComputo = createAsyncThunk<BaseHormigonComputo, number>(
+  "baseHormigonResults/fetchComputo",
+  async (id) => {
+    const response = await api.get<BaseHormigonComputo>(
+      `baseshormigon/${id}/computo`
+    );
+    return response.data;
+  }
+);
 
 export const fetchVerificaPunzonado = createAsyncThunk<
   BaseHormigonVerificacionPunzonado,
@@ -196,6 +209,12 @@ const baseHormigonResultsSlice = createSlice({
         fetchCalculoArmadura.fulfilled,
         (state, action: PayloadAction<BaseHormigonArmadura>) => {
           state.calculoArmadura = action.payload;
+        }
+      )
+      .addCase(
+        fetchComputo.fulfilled,
+        (state, action: PayloadAction<BaseHormigonComputo>) => {
+          state.computo = action.payload;
         }
       )
       .addCase(

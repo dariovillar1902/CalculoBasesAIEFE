@@ -8,12 +8,14 @@ type Props = {
   base: BaseHormigon;
   dimensionesBase: BaseHormigonDimensiones;
   calculoCuantia: BaseHormigonCuantia;
+  showFormulas: boolean;
 };
 
 const FormulasCalculoCuantia: React.FC<Props> = ({
   base,
   dimensionesBase,
   calculoCuantia,
+  showFormulas,
 }) => {
   const PD = (base.porcentajeCargaD.valor / 100) * base.esfuerzoAxil.valor;
   const PL = (base.porcentajeCargaL.valor / 100) * base.esfuerzoAxil.valor;
@@ -40,6 +42,7 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           )}\\ \\text{kN} + 1.6 \\cdot ${PL.toFixed(2)}\\ \\text{kN} \\right)`}
           result={calculoCuantia.esfuerzoAxilMayorado.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -53,6 +56,7 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           )}\\ \\text{m}}`}
           result={calculoCuantia.cargaMayorada.toFixed(2)}
           unit="kN/m²"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -68,6 +72,7 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           )}\\ \\text{m}`}
           result={calculoCuantia.momentoMayoradoX.toFixed(2)}
           unit="kN · m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -83,6 +88,7 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           )}\\ \\text{m}`}
           result={calculoCuantia.momentoMayoradoY.toFixed(2)}
           unit="kN · m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -96,6 +102,7 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           )}\\ \\text{m}`}
           result={calculoCuantia.areaAceroX.toFixed(2)}
           unit="cm²"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -109,6 +116,7 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           )}\\ \\text{m}`}
           result={calculoCuantia.areaAceroY.toFixed(2)}
           unit="cm²"
+          showFormulas={showFormulas}
         />
       </div>
     </div>

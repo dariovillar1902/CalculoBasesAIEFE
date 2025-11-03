@@ -10,6 +10,7 @@ type Props = {
   base: BaseHormigon;
   dimensionesBase: BaseHormigonDimensiones;
   verificacionesBase: BaseHormigonVerificaciones;
+  showFormulas: boolean;
 };
 
 const FormulasVerificacionesBase: React.FC<Props> = ({
@@ -17,6 +18,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
   base,
   dimensionesBase,
   verificacionesBase,
+  showFormulas,
 }) => {
   const {
     coeficienteSeguridadVuelco,
@@ -27,7 +29,6 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
     tensionMinimaX,
     tensionMaximaY,
     tensionMinimaY,
-    verificaTensionAdmisible,
     asentamientoMedio,
     asentamientoMaximo,
     asentamientoMinimo,
@@ -171,6 +172,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
             2
           )}\\ \\text{kN} \\cdot \\text{m}} \\right)`}
           result={coeficienteSeguridadVuelco.toFixed(2)}
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -181,6 +183,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
             2
           )} \\geq 1.5`}
           result={verificaVuelco ? "Sí" : "No"}
+          showFormulas={showFormulas}
         />
 
         {/* Excentricidades */}
@@ -193,6 +196,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           )}\\ \\text{kN} \\cdot \\text{m}}{${normal.toFixed(2)}\\ \\text{kN}}`}
           result={excentricidadX.toFixed(2)}
           unit="m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -204,6 +208,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           )}\\ \\text{kN} \\cdot \\text{m}}{${normal.toFixed(2)}\\ \\text{kN}}`}
           result={excentricidadY.toFixed(2)}
           unit="m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -213,6 +218,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           substituted={substitutedTensionXMax}
           result={tensionMaximaX.toFixed(2)}
           unit="kN/m²"
+          showFormulas={showFormulas}
         />
         <FormulaBlock
           title="Tensión Mínima X"
@@ -221,6 +227,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           substituted={substitutedTensionXMin}
           result={tensionMinimaX.toFixed(2)}
           unit="kN/m²"
+          showFormulas={showFormulas}
         />
         <FormulaBlock
           title="Tensión Máxima Y"
@@ -229,6 +236,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           substituted={substitutedTensionYMax}
           result={tensionMaximaY.toFixed(2)}
           unit="kN/m²"
+          showFormulas={showFormulas}
         />
         <FormulaBlock
           title="Tensión Mínima Y"
@@ -237,6 +245,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           substituted={substitutedTensionYMin}
           result={tensionMinimaY.toFixed(2)}
           unit="kN/m²"
+          showFormulas={showFormulas}
         />
 
         {/* Verificación de Tensiones Admisibles - Condición 1 */}
@@ -254,6 +263,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
               ? "Sí"
               : "No"
           }
+          showFormulas={showFormulas}
         />
 
         {/* Verificación de Tensiones Admisibles - Condición 2 */}
@@ -271,6 +281,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
               ? "Sí"
               : "No"
           }
+          showFormulas={showFormulas}
         />
 
         {/* Verificación de Tensiones Admisibles - Condición 3 */}
@@ -290,6 +301,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
               ? "Sí"
               : "No"
           }
+          showFormulas={showFormulas}
         />
 
         {/* Verificación de Tensiones Admisibles - Condición 4 */}
@@ -309,6 +321,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
               ? "Sí"
               : "No"
           }
+          showFormulas={showFormulas}
         />
 
         {/* Asentamientos */}
@@ -323,6 +336,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           )}\\ m \\cdot ${b_y.toFixed(2)}\\ m}`}
           result={(asentamientoMedio * 1000).toFixed(2)}
           unit="mm"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -346,6 +360,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           )})^2\\ m^2} \\right)`}
           result={(asentamientoMaximo * 1000).toFixed(2)}
           unit="mm"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -369,6 +384,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           )})^2\\ m^2} \\right)`}
           result={(asentamientoMinimo * 1000).toFixed(2)}
           unit="mm"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -379,6 +395,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
             2
           )}\\ mm \\leq 35\\ mm`}
           result={verificaAsentamientoMedio ? "Sí" : "No"}
+          showFormulas={showFormulas}
         />
 
         {/* Distorsión Angular */}
@@ -394,6 +411,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
             2
           )}\\ \\text{m})^{2}}}}`}
           result={distorsionAngular.toFixed(4)}
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -402,6 +420,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           symbolic={`\\beta \\leq 0.002`}
           substituted={`\\beta = ${distorsionAngular.toFixed(4)} \\leq 0.002`}
           result={verificaAsentamientoDiferencial ? "Sí" : "No"}
+          showFormulas={showFormulas}
         />
       </div>
     </div>

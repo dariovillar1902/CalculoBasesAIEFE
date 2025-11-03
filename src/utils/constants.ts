@@ -22,6 +22,13 @@ export const fieldDescriptions: Record<string, string> = {
   tensionFluenciaAcero: "Tensión de fluencia del acero de refuerzo",
   diametroBarrasX: "Diámetro de las barras de refuerzo en dirección X",
   diametroBarrasY: "Diámetro de las barras de refuerzo en dirección Y",
+  costoM3Hormigon:
+    "Precio por m3 de Hormigón (valor de referencia Noviembre 2025, para H25)",
+  costoKgAcero:
+    "Precio por kg de acero (valor de referencia Noviembre 2025, para barras ADN 420)",
+  costoM3Excavacion:
+    "Precio por m3 de excavación (valor de referencia Noviembre 2025, para excavación poco profunda)",
+  coeficienteEsponjamiento: "Coeficiente de esponjamiento del suelo",
 };
 
 export const unitOptions: Record<string, string[]> = {
@@ -33,4 +40,5 @@ export const unitOptions: Record<string, string[]> = {
   longitud: ["mm", "cm", "m"],
   densidad: ["kN/m³", "N/m³", "kg/m³"],
   texto: [],
+  precio: ["$"],
 };

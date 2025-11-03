@@ -10,6 +10,7 @@ type Props = {
   dimensionesBase: BaseHormigonDimensiones;
   calculoArmadura: BaseHormigonArmadura;
   cuantia: BaseHormigonCuantia;
+  showFormulas: boolean;
 };
 
 const FormulasCalculoArmadura: React.FC<Props> = ({
@@ -17,6 +18,7 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
   dimensionesBase,
   calculoArmadura,
   cuantia,
+  showFormulas,
 }) => {
   const diamX_cm = base.diametroBarrasX.valor * 100;
   const diamY_cm = base.diametroBarrasY.valor * 100;
@@ -47,6 +49,7 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
           )}\\ \\text{cm}^2}{${Abx.toFixed(2)}\\ \\text{cm}^2}`}
           result={Math.ceil(calculoArmadura.cantidadBarrasX).toString()}
           unit="barras"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -58,6 +61,7 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
           )}\\ \\text{cm}^2}{${Aby.toFixed(2)}\\ \\text{cm}^2}`}
           result={Math.ceil(calculoArmadura.cantidadBarrasY).toString()}
           unit="barras"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -73,6 +77,7 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
           )}\\ \\text{cm}, 0.3\\ \\text{m} \\right)`}
           result={calculoArmadura.separacionBarrasX.toFixed(2)}
           unit="cm"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -88,6 +93,7 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
           )}\\ \\text{cm}, 0.3\\ \\text{m} \\right)`}
           result={calculoArmadura.separacionBarrasY.toFixed(2)}
           unit="cm"
+          showFormulas={showFormulas}
         />
       </div>
     </div>

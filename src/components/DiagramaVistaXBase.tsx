@@ -142,9 +142,9 @@ const DiagramaVistaXBase: React.FC<{
         <Text
           x={startX + largeRectWidth + 15}
           y={startY + smallRectHeight / 2 - 10}
-          text={`NSZ = -${
+          text={`NSZ = -${(
             baseHormigon.nivelFundacion.valor - dimensionesBase.altura
-          } m`}
+          ).toFixed(2)} m`}
           fontSize={16}
           fill="black"
           align="center"

@@ -8,12 +8,14 @@ type Props = {
   base: BaseHormigon;
   dimensionesBase: BaseHormigonDimensiones;
   verificaCorte: BaseHormigonVerificacionCorte;
+  showFormulas: boolean;
 };
 
 const FormulasVerificacionCorte: React.FC<Props> = ({
   base,
   dimensionesBase,
   verificaCorte,
+  showFormulas,
 }) => {
   const P = base.esfuerzoAxil.valor;
   const ax = dimensionesBase.anchoX;
@@ -47,6 +49,7 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{m})`}
           result={verificaCorte.cargaTotal.toFixed(2)}
           unit="kN/m²"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -62,6 +65,7 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{m} \\right) \\cdot ${ay.toFixed(2)}\\ \\text{m}`}
           result={verificaCorte.resistenciaRequeridaX.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -77,6 +81,7 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{m} \\right) \\cdot ${ax.toFixed(2)}\\ \\text{m}`}
           result={verificaCorte.resistenciaRequeridaY.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -90,6 +95,7 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{m} \\cdot \\frac{\\sqrt{${fc}\\ \\text{MPa}}}{6}`}
           result={verificaCorte.resistenciaNominalX.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -103,6 +109,7 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{m} \\cdot \\frac{\\sqrt{${fc}\\ \\text{MPa}}}{6}`}
           result={verificaCorte.resistenciaNominalY.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -114,6 +121,7 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaCorte.resistenciaDisenoX.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -125,10 +133,11 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaCorte.resistenciaDisenoY.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
-          title="Resultado"
+          title="Verificación a Corte"
           tooltip={`Verifica que Vᵤₓ ≤ V_dₓ y Vᵤᵧ ≤ V_dᵧ<br/>Si ambas condiciones se cumplen, la base es segura frente al corte`}
           symbolic="V_{ux} \leq V_{dx}, \quad V_{uy} \leq V_{dy}"
           substituted={`V_{ux} = ${verificaCorte.resistenciaRequeridaX.toFixed(
@@ -140,7 +149,8 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{kN} \\leq ${verificaCorte.resistenciaDisenoY.toFixed(
             2
           )}\\ \\text{kN}`}
-          result={verificaCorte.cumpleVerificacion ? "Cumple" : "No cumple"}
+          result={verificaCorte.cumpleVerificacion ? "Sí" : "No"}
+          showFormulas={showFormulas}
         />
       </div>
     </div>

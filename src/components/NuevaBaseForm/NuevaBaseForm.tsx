@@ -39,6 +39,10 @@ const NuevaBaseForm: React.FC = () => {
     tensionFluenciaAcero: { valor: 420, unidad: "MPa", tipo: "presion" },
     diametroBarrasX: { valor: 16, unidad: "mm", tipo: "longitud" },
     diametroBarrasY: { valor: 16, unidad: "mm", tipo: "longitud" },
+    costoM3Hormigon: { valor: 150000, unidad: "$", tipo: "precio" },
+    costoKgAcero: { valor: 2300, unidad: "$", tipo: "precio" },
+    costoM3Excavacion: { valor: 25000, unidad: "$", tipo: "precio" },
+    coeficienteEsponjamiento: { valor: 1.3, unidad: "", tipo: "texto" },
   };
 
   type FormFieldKey = keyof typeof initialState;
@@ -128,6 +132,7 @@ const NuevaBaseForm: React.FC = () => {
 
       <div className="card">
         <h2 className="title">Crear Nueva Base</h2>
+        <img src="../../../public/fotoCargas.png" className="fotoCargas" />
         <form onSubmit={handleSubmit} className="formGrid">
           <NombreInput
             value={formData.nombre}

@@ -9,6 +9,7 @@ type Props = {
   substituted: string;
   result: string;
   unit?: string;
+  showFormulas: boolean;
 };
 
 const FormulaBlock: React.FC<Props> = ({
@@ -18,14 +19,15 @@ const FormulaBlock: React.FC<Props> = ({
   substituted,
   result,
   unit,
+  showFormulas,
 }) => (
   <div className="dimensiones-item">
     <h3>
       {title}
       <Tooltip text={tooltip} />
     </h3>
-    <BlockMath math={symbolic} />
-    <BlockMath math={substituted} />
+    {showFormulas && <BlockMath math={symbolic} />}
+    {showFormulas && <BlockMath math={substituted} />}
     <FormulaResult value={result} unit={unit} />
   </div>
 );

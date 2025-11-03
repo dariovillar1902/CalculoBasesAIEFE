@@ -8,12 +8,14 @@ type Props = {
   base: BaseHormigon;
   dimensionesBase: BaseHormigonDimensiones;
   verificaPunzonado: BaseHormigonVerificacionPunzonado;
+  showFormulas: boolean;
 };
 
 const FormulasVerificacionPunzonado: React.FC<Props> = ({
   base,
   dimensionesBase,
   verificaPunzonado,
+  showFormulas,
 }) => {
   const PD = (base.porcentajeCargaD.valor / 100) * base.esfuerzoAxil.valor;
   const PL = (base.porcentajeCargaL.valor / 100) * base.esfuerzoAxil.valor;
@@ -47,6 +49,7 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{kN} + 1.6 \\cdot ${PL.toFixed(2)}\\ \\text{kN} \\right)`}
           result={verificaPunzonado.esfuerzoAxilMayorado.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -64,6 +67,7 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{m})`}
           result={verificaPunzonado.cargaTotal.toFixed(2)}
           unit="kN/m²"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -81,6 +85,7 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{m})`}
           result={verificaPunzonado.resistenciaRequerida.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -92,6 +97,7 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{m}`}
           result={verificaPunzonado.b0.toFixed(2)}
           unit="m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -100,6 +106,7 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           symbolic="b = \frac{\max(c_x, c_y)}{\min(c_x, c_y)}"
           substituted={`b = \\frac{\\max(${cx}\\ \\text{m}, ${cy}\\ \\text{m})}{\\min(${cx}\\ \\text{m}, ${cy}\\ \\text{m})}`}
           result={verificaPunzonado.b.toFixed(2)}
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -127,6 +134,7 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{m} \\cdot \\sqrt{${fc}\\ \\text{MPa}}}{12} \\right)`}
           result={verificaPunzonado.resistenciaNominal.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -138,10 +146,11 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaPunzonado.resistenciaDiseno.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
-          title="Resultado"
+          title="Verificación a Punzonado"
           tooltip={`Verifica que Vᵤ ≤ V_d<br/>Si se cumple, la base resiste el punzonado`}
           symbolic="V_u \leq V_d"
           substituted={`V_u = ${verificaPunzonado.resistenciaRequerida.toFixed(
@@ -149,7 +158,8 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{kN} \\leq ${verificaPunzonado.resistenciaDiseno.toFixed(
             2
           )}\\ \\text{kN}`}
-          result={verificaPunzonado.cumpleVerificacion ? "Cumple" : "No cumple"}
+          result={verificaPunzonado.cumpleVerificacion ? "Sí" : "No"}
+          showFormulas={showFormulas}
         />
       </div>
     </div>

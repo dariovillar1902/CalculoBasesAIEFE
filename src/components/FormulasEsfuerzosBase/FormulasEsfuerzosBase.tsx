@@ -8,12 +8,14 @@ type Props = {
   base: BaseHormigon;
   dimensionesBase: BaseHormigonDimensiones;
   esfuerzosBase: BaseHormigonEsfuerzos;
+  showFormulas: boolean;
 };
 
 const FormulasEsfuerzosBase: React.FC<Props> = ({
   base,
   dimensionesBase,
   esfuerzosBase,
+  showFormulas,
 }) => {
   const { anchoX: b_x, anchoY: b_y, altura: h } = dimensionesBase;
 
@@ -47,6 +49,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           )}\\ \\text{kN/m³}`}
           result={esfuerzosBase.normal.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -62,6 +65,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           )}\\ \\text{m}`}
           result={esfuerzosBase.momentoX.toFixed(2)}
           unit="kN·m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -77,6 +81,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           )}\\ \\text{m}`}
           result={esfuerzosBase.momentoY.toFixed(2)}
           unit="kN·m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -86,6 +91,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           substituted={`V_{x} = ${base.corteX.valor.toFixed(2)}\\ \\text{kN}`}
           result={esfuerzosBase.corteX.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -95,6 +101,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           substituted={`V_{y} = ${base.corteY.valor.toFixed(2)}\\ \\text{kN}`}
           result={esfuerzosBase.corteY.toFixed(2)}
           unit="kN"
+          showFormulas={showFormulas}
         />
       </div>
     </div>

@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import "./Navbar.scss";
 import { useAutomatico } from "../../context/automatico-context";
 import logo from "../../assets/Logo-AIE.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -15,12 +17,13 @@ const Navbar: React.FC = () => {
       </div>
       <div className="navbar-controls">
         <label className="toggle-wrapper">
-          <input
+          <FontAwesomeIcon icon={faCog} size="lg" />
+          {/*  <input
             type="checkbox"
             checked={automatico}
             onChange={(e) => setAutomatico(e.target.checked)}
             className="toggle"
-          />
+          /> */}
         </label>
         <button className="new-button" onClick={() => navigate("/new")}>
           Nueva Base

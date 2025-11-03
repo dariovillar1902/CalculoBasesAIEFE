@@ -6,11 +6,13 @@ import FormulaBlock from "../FormulaBlock/FormulaBlock";
 type Props = {
   dimensionesBase: BaseHormigonDimensiones;
   base: BaseHormigon;
+  showFormulas: boolean;
 };
 
 const FormulasDimensionesBase: React.FC<Props> = ({
   dimensionesBase,
   base,
+  showFormulas,
 }) => {
   const { area, anchoX, anchoY, altura, vueloX, vueloY } = dimensionesBase;
 
@@ -34,6 +36,7 @@ const FormulasDimensionesBase: React.FC<Props> = ({
           )}\\ \\text{m}}`}
           result={area.toFixed(2)}
           unit="m²"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -53,6 +56,7 @@ const FormulasDimensionesBase: React.FC<Props> = ({
           )}\\ \\text{m}}{2}`}
           result={anchoX.toFixed(2)}
           unit="m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -72,6 +76,7 @@ const FormulasDimensionesBase: React.FC<Props> = ({
           )}\\ \\text{m}}{2}`}
           result={anchoY.toFixed(2)}
           unit="m"
+          showFormulas={showFormulas}
         />
 
         <FormulaBlock
@@ -85,6 +90,7 @@ const FormulasDimensionesBase: React.FC<Props> = ({
           )}\\ \\text{m}}{5}, 0.25\\ \\text{m}\\right)`}
           result={altura.toFixed(2)}
           unit="m"
+          showFormulas={showFormulas}
         />
       </div>
     </div>

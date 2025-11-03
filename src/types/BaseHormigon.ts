@@ -26,4 +26,8 @@ export interface BaseHormigon {
   tensionFluenciaAcero: ValueUnitPair;
   diametroBarrasX: ValueUnitPair;
   diametroBarrasY: ValueUnitPair;
+  costoM3Hormigon: ValueUnitPair;
+  costoKgAcero: ValueUnitPair;
+  costoM3Excavacion: ValueUnitPair;
+  coeficienteEsponjamiento: ValueUnitPair;
 }
