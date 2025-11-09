@@ -55,10 +55,11 @@ const BasesHormigonTable: React.FC = () => {
               <th>Nombre</th>
               <th>Esfuerzo Axil (kN) </th>
               <th>Carga Admisible (kPa)</th>
-              <th>Ancho Columna X (m)</th>
-              <th>Ancho Columna Y (m)</th>
-              <th>Nivel de Fundación (m) </th>
-              <th>Recubrimiento (m) </th>
+              <th>Corte X (kN)</th>
+              <th>Corte Y (kN)</th>
+              <th>Momento X (kNm) </th>
+              <th>Momento Y (kNm) </th>
+              <th>Módulo Balasto (kN/m3) </th>
               <th className="acciones-column">Acciones</th>
             </tr>
           </thead>
@@ -68,10 +69,11 @@ const BasesHormigonTable: React.FC = () => {
                 <td>{item.nombre}</td>
                 <td>{item.esfuerzoAxil.valor}</td>
                 <td>{item.cargaAdmisible.valor}</td>
-                <td>{item.anchoColumnaX.valor}</td>
-                <td>{item.anchoColumnaY.valor}</td>
-                <td>{item.nivelFundacion.valor}</td>
-                <td>{item.recubrimientoHormigon.valor}</td>
+                <td>{item.corteX.valor}</td>
+                <td>{item.corteY.valor}</td>
+                <td>{item.momentoX.valor}</td>
+                <td>{item.momentoY.valor}</td>
+                <td>{item.moduloBalasto.valor}</td>
                 <td className="acciones-column">
                   <button
                     className="icon-square-btn"

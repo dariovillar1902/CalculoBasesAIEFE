@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks.ts";
 import {
+  fetchBaseHormigon,
   fetchDimensionesBase,
   fetchCalculoCuantia,
   fetchVerificaPunzonado,
@@ -31,20 +32,18 @@ import FormulasVerificacionCorte from "../FormulasVerificacionCorte/FormulasVeri
 import FormulasCalculoArmadura from "../FormulasCalculoArmadura/FormulasCalculoArmadura.tsx";
 import FormulasEsfuerzosBase from "../FormulasEsfuerzosBase/FormulasEsfuerzosBase.tsx";
 import FormulasVerificacionesBase from "../FormulasVerificacionesBase/FormulasVerificacionesBase.tsx";
+import FormulasComputo from "../FormulasComputo/FormulasComputo.tsx";
+import ResumenVerificaciones from "../ResumenVerificaciones/ResumenVerificaciones.tsx";
 
 import "katex/dist/katex.min.css";
 import "./ResultadosBase.scss";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowDownUpAcrossLine,
-  faEye,
   faFileCsv,
   faFileExcel,
   faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
-import FormulasComputo from "../FormulasComputo/FormulasComputo.tsx";
-import ResumenVerificaciones from "../ResumenVerificaciones/ResumenVerificaciones.tsx";
 
 const BAR_DIAMETERS = [10, 12, 16, 20, 25];
 
@@ -72,25 +71,25 @@ const stepsConfig = (baseId: number) => [
     label: "Calculando armadura...",
   },
   { action: () => fetchComputo(baseId), label: "Realizando cómputo..." },
+  { action: () => Promise.resolve(), label: "Resumiendo verificaciones..." },
+  { action: () => Promise.resolve(), label: "Generando diagramas..." },
 ];
 
 const ResultadosBase: React.FC = () => {
   const location = useLocation();
   const baseId: number = location.state?.baseId;
   const dispatch = useAppDispatch();
-  const { automatico } = useAutomatico();
+  const { automatico, invertirResultados, mostrarFormulas } = useAutomatico();
 
   const [showResults, setShowResults] = useState(false);
   const [statusMessage, setStatusMessage] = useState("Iniciando...");
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-
   const [barraX, setBarraX] = useState<number | null>(null);
   const [barraY, setBarraY] = useState<number | null>(null);
-  const [reverseFormulas, setReverseFormulas] = useState(false);
-  const [showFormulas, setShowFormulas] = useState(true);
 
   const {
+    base,
     dimensionesBase,
     esfuerzosBase,
     verificacionesBase,
@@ -99,13 +98,15 @@ const ResultadosBase: React.FC = () => {
     calculoCuantia,
     calculoArmadura,
     computo,
+    loading,
   } = useAppSelector((state) => state.baseHormigonResults);
 
-  const base = useAppSelector((state) =>
-    state.baseHormigon.data.find((b) => b.id === baseId)
-  );
-
   const steps = baseId ? stepsConfig(baseId) : [];
+
+  // Fetch base
+  useEffect(() => {
+    if (baseId) dispatch(fetchBaseHormigon(baseId));
+  }, [baseId, dispatch]);
 
   useEffect(() => {
     if (!baseId || !automatico) return;
@@ -118,14 +119,19 @@ const ResultadosBase: React.FC = () => {
         setProgress(((i + 1) / steps.length) * 100);
 
         try {
-          await dispatch(action()).unwrap();
+          const result = action();
+          if (result instanceof Promise) {
+            await result;
+          } else {
+            await dispatch(result).unwrap();
+          }
         } catch (err) {
           console.error(`Error en paso "${label}":`, err);
           setStatusMessage(`Error en: ${label}`);
           break;
         }
 
-        await new Promise((res) => setTimeout(res, 500));
+        await new Promise((res) => setTimeout(res, 1000));
         setCurrentStep(i + 1);
       }
     };
@@ -171,13 +177,117 @@ const ResultadosBase: React.FC = () => {
     }
   };
 
-  const renderDiagrams = () =>
-    showResults &&
+  if (loading.base || !base) return <div className="spinner" />;
+
+  const stepComponents: (JSX.Element | null)[] = [
+    dimensionesBase && base ? (
+      <div key="dimensiones" className="fade-in formulas-container">
+        <FormulasDimensionesBase
+          dimensionesBase={dimensionesBase}
+          base={base}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    esfuerzosBase && dimensionesBase && base ? (
+      <div key="esfuerzos" className="fade-in formulas-container">
+        <FormulasEsfuerzosBase
+          base={base}
+          dimensionesBase={dimensionesBase}
+          esfuerzosBase={esfuerzosBase}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    verificacionesBase && esfuerzosBase && dimensionesBase && base ? (
+      <div key="verificaciones" className="fade-in formulas-container">
+        <FormulasVerificacionesBase
+          verificacionesBase={verificacionesBase}
+          esfuerzosBase={esfuerzosBase}
+          base={base}
+          dimensionesBase={dimensionesBase}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    calculoCuantia && dimensionesBase && base ? (
+      <div key="cuantia" className="fade-in formulas-container">
+        <FormulasCalculoCuantia
+          calculoCuantia={calculoCuantia}
+          base={base}
+          dimensionesBase={dimensionesBase}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    verificaPunzonado && dimensionesBase && base ? (
+      <div key="punzonado" className="fade-in formulas-container">
+        <FormulasVerificacionPunzonado
+          verificaPunzonado={verificaPunzonado}
+          base={base}
+          dimensionesBase={dimensionesBase}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    verificaCorte && dimensionesBase && base ? (
+      <div key="corte" className="fade-in formulas-container">
+        <FormulasVerificacionCorte
+          verificaCorte={verificaCorte}
+          base={base}
+          dimensionesBase={dimensionesBase}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    calculoArmadura && calculoCuantia && dimensionesBase && base ? (
+      <div key="armadura" className="fade-in formulas-container">
+        <FormulasCalculoArmadura
+          calculoArmadura={calculoArmadura}
+          base={base}
+          dimensionesBase={dimensionesBase}
+          cuantia={calculoCuantia}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    computo && calculoArmadura && calculoCuantia && dimensionesBase && base ? (
+      <div key="computo" className="fade-in formulas-container">
+        <FormulasComputo
+          calculoArmadura={calculoArmadura}
+          base={base}
+          dimensionesBase={dimensionesBase}
+          cuantia={calculoCuantia}
+          computo={computo}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    verificacionesBase &&
+    verificaCorte &&
+    verificaPunzonado &&
+    esfuerzosBase &&
     dimensionesBase &&
-    calculoArmadura &&
-    base && (
-      <div className="diagramas-container">
-        <div className="estructura-diagrama fade-in">
+    base ? (
+      <div key="resumen" className="fade-in formulas-container">
+        <ResumenVerificaciones
+          verificacionesBase={verificacionesBase}
+          verificaCorte={verificaCorte}
+          verificaPunzonado={verificaPunzonado}
+          esfuerzosBase={esfuerzosBase}
+          base={base}
+          dimensionesBase={dimensionesBase}
+          showFormulas={mostrarFormulas}
+        />
+      </div>
+    ) : null,
+    dimensionesBase && calculoArmadura && base ? (
+      <div
+        key="diagramas"
+        className="fade-in diagramas-container"
+        style={{ justifyContent: "center", gap: "20px" }}
+      >
+        <div className="estructura-diagrama">
           <h3>PLANTA</h3>
           <DiagramaPlantaBase
             dimensionesBase={dimensionesBase}
@@ -185,212 +295,27 @@ const ResultadosBase: React.FC = () => {
             baseHormigon={base}
           />
         </div>
-        <div className="estructura-diagrama fade-in">
-          <h3>VISTA DIRECCIÓN X</h3>
+        <div className="estructura-diagrama">
+          <h3>VISTA X</h3>
           <DiagramaVistaXBase
             dimensionesBase={dimensionesBase}
             baseHormigon={base}
           />
         </div>
-        <div className="estructura-diagrama fade-in">
-          <h3>VISTA DIRECCIÓN Y</h3>
+        <div className="estructura-diagrama">
+          <h3>VISTA Y</h3>
           <DiagramaVistaYBase
             dimensionesBase={dimensionesBase}
             baseHormigon={base}
           />
         </div>
       </div>
-    );
+    ) : null,
+  ];
 
-  const renderFormulas = () =>
-    showResults && (
-      <>
-        {dimensionesBase && base && (
-          <FormulasDimensionesBase
-            dimensionesBase={dimensionesBase}
-            base={base}
-            showFormulas={showFormulas}
-          />
-        )}
-        {esfuerzosBase && dimensionesBase && base && (
-          <FormulasEsfuerzosBase
-            base={base}
-            dimensionesBase={dimensionesBase}
-            esfuerzosBase={esfuerzosBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {verificacionesBase && esfuerzosBase && dimensionesBase && base && (
-          <FormulasVerificacionesBase
-            verificacionesBase={verificacionesBase}
-            esfuerzosBase={esfuerzosBase}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {calculoCuantia && dimensionesBase && base && (
-          <FormulasCalculoCuantia
-            calculoCuantia={calculoCuantia}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {verificaPunzonado && dimensionesBase && base && (
-          <FormulasVerificacionPunzonado
-            verificaPunzonado={verificaPunzonado}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {verificaCorte && dimensionesBase && base && (
-          <FormulasVerificacionCorte
-            verificaCorte={verificaCorte}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {calculoArmadura && calculoCuantia && dimensionesBase && base && (
-          <FormulasCalculoArmadura
-            calculoArmadura={calculoArmadura}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            cuantia={calculoCuantia}
-            showFormulas={showFormulas}
-          />
-        )}
-        {computo &&
-          calculoArmadura &&
-          calculoCuantia &&
-          dimensionesBase &&
-          base && (
-            <FormulasComputo
-              calculoArmadura={calculoArmadura}
-              base={base}
-              dimensionesBase={dimensionesBase}
-              cuantia={calculoCuantia}
-              computo={computo}
-              showFormulas={showFormulas}
-            />
-          )}
-        {calculoArmadura &&
-          calculoCuantia &&
-          verificacionesBase &&
-          verificaCorte &&
-          verificaPunzonado &&
-          esfuerzosBase &&
-          dimensionesBase &&
-          base && (
-            <ResumenVerificaciones
-              verificacionesBase={verificacionesBase}
-              verificaCorte={verificaCorte}
-              verificaPunzonado={verificaPunzonado}
-              esfuerzosBase={esfuerzosBase}
-              base={base}
-              dimensionesBase={dimensionesBase}
-              showFormulas={showFormulas}
-            />
-          )}
-      </>
-    );
-
-  const renderFormulasInvertidas = () =>
-    showResults && (
-      <>
-        {calculoArmadura &&
-          calculoCuantia &&
-          verificaCorte &&
-          verificaPunzonado &&
-          verificacionesBase &&
-          esfuerzosBase &&
-          dimensionesBase &&
-          base && (
-            <ResumenVerificaciones
-              verificacionesBase={verificacionesBase}
-              verificaCorte={verificaCorte}
-              verificaPunzonado={verificaPunzonado}
-              esfuerzosBase={esfuerzosBase}
-              base={base}
-              dimensionesBase={dimensionesBase}
-              showFormulas={showFormulas}
-            />
-          )}
-        {computo &&
-          calculoArmadura &&
-          calculoCuantia &&
-          dimensionesBase &&
-          base && (
-            <FormulasComputo
-              calculoArmadura={calculoArmadura}
-              base={base}
-              dimensionesBase={dimensionesBase}
-              cuantia={calculoCuantia}
-              computo={computo}
-              showFormulas={showFormulas}
-            />
-          )}
-        {calculoArmadura && calculoCuantia && dimensionesBase && base && (
-          <FormulasCalculoArmadura
-            calculoArmadura={calculoArmadura}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            cuantia={calculoCuantia}
-            showFormulas={showFormulas}
-          />
-        )}
-        {verificaCorte && dimensionesBase && base && (
-          <FormulasVerificacionCorte
-            verificaCorte={verificaCorte}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {verificaPunzonado && dimensionesBase && base && (
-          <FormulasVerificacionPunzonado
-            verificaPunzonado={verificaPunzonado}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {calculoCuantia && dimensionesBase && base && (
-          <FormulasCalculoCuantia
-            calculoCuantia={calculoCuantia}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {verificacionesBase && esfuerzosBase && dimensionesBase && base && (
-          <FormulasVerificacionesBase
-            verificacionesBase={verificacionesBase}
-            esfuerzosBase={esfuerzosBase}
-            base={base}
-            dimensionesBase={dimensionesBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {esfuerzosBase && dimensionesBase && base && (
-          <FormulasEsfuerzosBase
-            base={base}
-            dimensionesBase={dimensionesBase}
-            esfuerzosBase={esfuerzosBase}
-            showFormulas={showFormulas}
-          />
-        )}
-        {dimensionesBase && base && (
-          <FormulasDimensionesBase
-            dimensionesBase={dimensionesBase}
-            base={base}
-            showFormulas={showFormulas}
-          />
-        )}
-      </>
-    );
+  const displayedSteps = invertirResultados
+    ? [...stepComponents].filter(Boolean).reverse().slice(0, currentStep)
+    : stepComponents.filter(Boolean).slice(0, currentStep);
 
   return (
     <div className="resultados-base">
@@ -471,40 +396,20 @@ const ResultadosBase: React.FC = () => {
             </label>
           );
         })}
-        <button
-          onClick={() => setReverseFormulas((prev) => !prev)}
-          className="ml-4 p-2 rounded-md bg-gray-200 hover:bg-gray-300 shadow"
-          title="Invertir orden de resultados"
-        >
-          <FontAwesomeIcon icon={faArrowDownUpAcrossLine} />
-        </button>
-        <button
-          onClick={() => setShowFormulas((prev) => !prev)}
-          className="ml-4 p-2 rounded-md bg-gray-200 hover:bg-gray-300 shadow"
-          title="Mostrar/ocultar fórmulas"
-        >
-          <FontAwesomeIcon icon={faEye} />
-        </button>
       </div>
 
-      <h2>Resultados {base?.nombre ? " - " + base.nombre : ""}</h2>
+      <h2>Resultados - {base.nombre}</h2>
 
       <div className="progress-bar-container">
         <div className="progress-bar" style={{ width: `${progress}%` }} />
       </div>
       <p className="status-message">{statusMessage}</p>
 
-      {reverseFormulas ? (
-        <>
-          {renderDiagrams()}
-          {renderFormulasInvertidas()}
-        </>
-      ) : (
-        <>
-          {renderFormulas()}
-          {renderDiagrams()}
-        </>
-      )}
+      <div className="resultados-steps">
+        {displayedSteps.map((step, i) => (
+          <div key={i}>{step}</div>
+        ))}
+      </div>
     </div>
   );
 };
