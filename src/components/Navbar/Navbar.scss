@@ -68,3 +68,13 @@
   display: flex;
   align-items: center;
 }
+
+.ajustes-link {
+  margin-left: auto;
+  padding: 0;
+  color: white;
+
+  :hover {
+    color: $black;
+  }
+}

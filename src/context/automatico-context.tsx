@@ -1,36 +1,27 @@
-import { createContext, useContext, useState, useEffect } from "react";
+// context/automatico-context.tsx
+import { createContext, useContext, useState } from "react";
 
-interface AutomaticoContextType {
-  automatico: boolean;
-  setAutomatico: (value: boolean) => void;
-}
+const AutomaticoContext = createContext(null);
 
-const AutomaticoContext = createContext<AutomaticoContextType | undefined>(
-  undefined
-);
-
-export const AutomaticoProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [automatico, setAutomatico] = useState<boolean>(() => {
-    return JSON.parse(localStorage.getItem("automatico") || "true"); // Default to true
-  });
-
-  useEffect(() => {
-    localStorage.setItem("automatico", JSON.stringify(automatico)); // Persist state
-  }, [automatico]);
+export const AutomaticoProvider = ({ children }) => {
+  const [automatico, setAutomatico] = useState(true);
+  const [invertirResultados, setInvertirResultados] = useState(false);
+  const [mostrarFormulas, setMostrarFormulas] = useState(true);
 
   return (
-    <AutomaticoContext.Provider value={{ automatico, setAutomatico }}>
+    <AutomaticoContext.Provider
+      value={{
+        automatico,
+        setAutomatico,
+        invertirResultados,
+        setInvertirResultados,
+        mostrarFormulas,
+        setMostrarFormulas,
+      }}
+    >
       {children}
     </AutomaticoContext.Provider>
   );
 };
 
-export const useAutomatico = () => {
-  const context = useContext(AutomaticoContext);
-  if (!context) {
-    throw new Error("useAutomatico must be used within an AutomaticoProvider");
-  }
-  return context;
-};
+export const useAutomatico = () => useContext(AutomaticoContext);

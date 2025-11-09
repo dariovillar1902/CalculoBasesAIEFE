@@ -151,6 +151,7 @@ const FormulasVerificacionCorte: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaCorte.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
+          reference="Art. 11.12.2.1 CIRSOC 201-05. Página 286"
         />
       </div>
     </div>

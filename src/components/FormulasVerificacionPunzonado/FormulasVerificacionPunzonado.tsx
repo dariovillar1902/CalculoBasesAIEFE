@@ -160,6 +160,7 @@ const FormulasVerificacionPunzonado: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaPunzonado.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
+          reference="Art. 11.12.2.2 CIRSOC 201-05. Página 287"
         />
       </div>
     </div>

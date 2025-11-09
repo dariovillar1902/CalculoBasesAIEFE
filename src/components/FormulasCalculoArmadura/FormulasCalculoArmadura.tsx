@@ -67,14 +67,16 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
         <FormulaBlock
           title="Separación Barras X"
           tooltip={`ay: Largo en Y<br/>cc: Recubrimiento de concreto<br/>d: Diámetro de barra<br/>db: Diámetro nominal`}
-          symbolic="s_x = \min \left( \frac{a_y - 2 \cdot c_c}{N_x - 1},\ 2.5 \cdot d,\ 25 \cdot d_b,\ 0.3 \right)"
+          symbolic="s_x = \min \left( \frac{a_y - 2 \cdot c_c}{N_x - 1},\ 2.5 \cdot d,\ 25 \cdot d_b,\ 0.3 \ m\right)"
           substituted={`s_x = \\min \\left( \\frac{${ay.toFixed(
             2
           )}\\ \\text{cm} - 2 \\cdot ${cc}\\ \\text{cm}}{${Math.ceil(
             Nx
-          )} - 1}, ${(2.5 * d).toFixed(2)}\\ \\text{cm}, ${(25 * db).toFixed(
+          )} - 1}, ${(2.5 * (dimensionesBase.altura - cc)).toFixed(
             2
-          )}\\ \\text{cm}, 0.3\\ \\text{m} \\right)`}
+          )}\\ \\text{m}, ${(25 * db).toFixed(
+            2
+          )}\\ \\text{m}, 0.3\\ \\text{m} \\right)`}
           result={calculoArmadura.separacionBarrasX.toFixed(2)}
           unit="cm"
           showFormulas={showFormulas}
@@ -83,14 +85,16 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
         <FormulaBlock
           title="Separación Barras Y"
           tooltip={`ax: Largo en X<br/>cc: Recubrimiento de concreto<br/>d: Diámetro de barra<br/>db: Diámetro nominal`}
-          symbolic="s_y = \min \left( \frac{a_x - 2 \cdot c_c}{N_y - 1},\ 2.5 \cdot d,\ 25 \cdot d_b,\ 0.3 \right)"
+          symbolic="s_y = \min \left( \frac{a_x - 2 \cdot c_c}{N_y - 1},\ 2.5 \cdot d,\ 25 \cdot d_b,\ 0.3 \ m\right)"
           substituted={`s_y = \\min \\left( \\frac{${ax.toFixed(
             2
           )}\\ \\text{cm} - 2 \\cdot ${cc}\\ \\text{cm}}{${Math.ceil(
             Ny
-          )} - 1}, ${(2.5 * d).toFixed(2)}\\ \\text{cm}, ${(25 * db).toFixed(
+          )} - 1}, ${(2.5 * (dimensionesBase.altura - cc)).toFixed(
             2
-          )}\\ \\text{cm}, 0.3\\ \\text{m} \\right)`}
+          )}\\ \\text{m}, ${(25 * db).toFixed(
+            2
+          )}\\ \\text{m}, 0.3\\ \\text{m} \\right)`}
           result={calculoArmadura.separacionBarrasY.toFixed(2)}
           unit="cm"
           showFormulas={showFormulas}

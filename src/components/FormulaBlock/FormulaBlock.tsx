@@ -10,6 +10,7 @@ type Props = {
   result: string;
   unit?: string;
   showFormulas: boolean;
+  reference?: string;
 };
 
 const FormulaBlock: React.FC<Props> = ({
@@ -20,15 +21,20 @@ const FormulaBlock: React.FC<Props> = ({
   result,
   unit,
   showFormulas,
+  reference,
 }) => (
   <div className="dimensiones-item">
     <h3>
       {title}
       <Tooltip text={tooltip} />
     </h3>
+
     {showFormulas && <BlockMath math={symbolic} />}
     {showFormulas && <BlockMath math={substituted} />}
+
     <FormulaResult value={result} unit={unit} />
+
+    {reference && <p className="formula-reference">{reference}</p>}
   </div>
 );
 

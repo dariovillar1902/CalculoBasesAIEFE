@@ -148,6 +148,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaPunzonado.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
+          reference="Art. 11.12.2.2 CIRSOC 201-05. Página 287"
         />
 
         <FormulaBlock
@@ -165,6 +166,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaCorte.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
+          reference="Art. 11.12.2.1 CIRSOC 201-05. Página 286"
         />
       </div>
     </div>

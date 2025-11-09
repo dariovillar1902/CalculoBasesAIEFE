@@ -132,7 +132,7 @@ const NuevaBaseForm: React.FC = () => {
 
       <div className="card">
         <h2 className="title">Crear Nueva Base</h2>
-        <img src="../../../public/fotoCargas.png" className="fotoCargas" />
+        <img src="/fotoCargas.png" className="fotoCargas" />
         <form onSubmit={handleSubmit} className="formGrid">
           <NombreInput
             value={formData.nombre}

@@ -24,7 +24,17 @@ interface BaseHormigonResultsState {
   calculoCuantia: BaseHormigonCuantia | null;
   calculoArmadura: BaseHormigonArmadura | null;
   computo: BaseHormigonComputo | null;
-  loading: boolean;
+  loading: {
+    base: boolean;
+    dimensiones: boolean;
+    esfuerzos: boolean;
+    verificaciones: boolean;
+    punzonado: boolean;
+    corte: boolean;
+    cuantia: boolean;
+    armadura: boolean;
+    computo: boolean;
+  };
   error: string | null;
 }
 
@@ -38,7 +48,17 @@ const initialState: BaseHormigonResultsState = {
   calculoCuantia: null,
   calculoArmadura: null,
   computo: null,
-  loading: false,
+  loading: {
+    base: false,
+    dimensiones: false,
+    esfuerzos: false,
+    verificaciones: false,
+    punzonado: false,
+    corte: false,
+    cuantia: false,
+    armadura: false,
+    computo: false,
+  },
   error: null,
 };
 
@@ -155,80 +175,125 @@ const baseHormigonResultsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // BASE
       .addCase(fetchBaseHormigon.pending, (state) => {
-        state.loading = true;
+        state.loading.base = true;
       })
-      .addCase(
-        fetchBaseHormigon.fulfilled,
-        (state, action: PayloadAction<BaseHormigon>) => {
-          state.loading = false;
-          state.base = action.payload;
-        }
-      )
+      .addCase(fetchBaseHormigon.fulfilled, (state, action) => {
+        state.loading.base = false;
+        state.base = action.payload;
+      })
       .addCase(fetchBaseHormigon.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
+        state.loading.base = false;
+        state.error = action.error.message ?? null;
       })
-      .addCase(
-        fetchDimensionesBase.fulfilled,
-        (state, action: PayloadAction<BaseHormigonDimensiones>) => {
-          state.dimensionesBase = action.payload;
-        }
-      )
-      .addCase(
-        fetchEsfuerzosBase.fulfilled,
-        (state, action: PayloadAction<BaseHormigonEsfuerzos>) => {
-          state.esfuerzosBase = action.payload;
-        }
-      )
-      .addCase(
-        fetchVerificacionesBase.fulfilled,
-        (state, action: PayloadAction<BaseHormigonVerificaciones>) => {
-          state.verificacionesBase = action.payload;
-        }
-      )
-      .addCase(
-        fetchVerificaPunzonado.fulfilled,
-        (state, action: PayloadAction<BaseHormigonVerificacionPunzonado>) => {
-          state.verificaPunzonado = action.payload;
-        }
-      )
-      .addCase(
-        fetchVerificaCorte.fulfilled,
-        (state, action: PayloadAction<BaseHormigonVerificacionCorte>) => {
-          state.verificaCorte = action.payload;
-        }
-      )
-      .addCase(
-        fetchCalculoCuantia.fulfilled,
-        (state, action: PayloadAction<BaseHormigonCuantia>) => {
-          state.calculoCuantia = action.payload;
-        }
-      )
-      .addCase(
-        fetchCalculoArmadura.fulfilled,
-        (state, action: PayloadAction<BaseHormigonArmadura>) => {
-          state.calculoArmadura = action.payload;
-        }
-      )
-      .addCase(
-        fetchComputo.fulfilled,
-        (state, action: PayloadAction<BaseHormigonComputo>) => {
-          state.computo = action.payload;
-        }
-      )
-      .addCase(
-        fetchCalculoArmaduraConDiametros.fulfilled,
-        (state, action: PayloadAction<BaseHormigonArmadura>) => {
-          state.calculoArmadura = action.payload;
-        }
-      )
-      .addCase(fetchCalculoArmaduraConDiametros.pending, (state) => {
-        state.loading = true;
+
+      // DIMENSIONES
+      .addCase(fetchDimensionesBase.pending, (state) => {
+        state.loading.dimensiones = true;
       })
-      .addCase(fetchCalculoArmaduraConDiametros.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
+      .addCase(fetchDimensionesBase.fulfilled, (state, action) => {
+        state.loading.dimensiones = false;
+        state.dimensionesBase = action.payload;
+      })
+      .addCase(fetchDimensionesBase.rejected, (state, action) => {
+        state.loading.dimensiones = false;
+        state.error = action.error.message ?? null;
+      })
+
+      // ESFUERZOS
+      .addCase(fetchEsfuerzosBase.pending, (state) => {
+        state.loading.esfuerzos = true;
+      })
+      .addCase(fetchEsfuerzosBase.fulfilled, (state, action) => {
+        state.loading.esfuerzos = false;
+        state.esfuerzosBase = action.payload;
+      })
+      .addCase(fetchEsfuerzosBase.rejected, (state, action) => {
+        state.loading.esfuerzos = false;
+        state.error = action.error.message ?? null;
+      })
+
+      // VERIFICACIONES
+      .addCase(fetchVerificacionesBase.pending, (state) => {
+        state.loading.verificaciones = true;
+      })
+      .addCase(fetchVerificacionesBase.fulfilled, (state, action) => {
+        state.loading.verificaciones = false;
+        state.verificacionesBase = action.payload;
+      })
+      .addCase(fetchVerificacionesBase.rejected, (state, action) => {
+        state.loading.verificaciones = false;
+        state.error = action.error.message ?? null;
+      })
+
+      // PUNZONADO
+      .addCase(fetchVerificaPunzonado.pending, (state) => {
+        state.loading.punzonado = true;
+      })
+      .addCase(fetchVerificaPunzonado.fulfilled, (state, action) => {
+        state.loading.punzonado = false;
+        state.verificaPunzonado = action.payload;
+      })
+      .addCase(fetchVerificaPunzonado.rejected, (state, action) => {
+        state.loading.punzonado = false;
+        state.error = action.error.message ?? null;
+      })
+
+      // CORTE
+      .addCase(fetchVerificaCorte.pending, (state) => {
+        state.loading.corte = true;
+      })
+      .addCase(fetchVerificaCorte.fulfilled, (state, action) => {
+        state.loading.corte = false;
+        state.verificaCorte = action.payload;
+      })
+      .addCase(fetchVerificaCorte.rejected, (state, action) => {
+        state.loading.corte = false;
+        state.error = action.error.message ?? null;
+      })
+
+      // CUANTIA
+      .addCase(fetchCalculoCuantia.pending, (state) => {
+        state.loading.cuantia = true;
+      })
+      .addCase(fetchCalculoCuantia.fulfilled, (state, action) => {
+        state.loading.cuantia = false;
+        state.calculoCuantia = action.payload;
+      })
+      .addCase(fetchCalculoCuantia.rejected, (state, action) => {
+        state.loading.cuantia = false;
+        state.error = action.error.message ?? null;
+      })
+
+      // ARMADURA
+      .addCase(fetchCalculoArmadura.pending, (state) => {
+        state.loading.armadura = true;
+      })
+      .addCase(fetchCalculoArmadura.fulfilled, (state, action) => {
+        state.loading.armadura = false;
+        state.calculoArmadura = action.payload;
+      })
+      .addCase(fetchCalculoArmadura.rejected, (state, action) => {
+        state.loading.armadura = false;
+        state.error = action.error.message ?? null;
+      })
+
+      // COMPUTO
+      .addCase(fetchComputo.pending, (state) => {
+        state.loading.computo = true;
+      })
+      .addCase(fetchComputo.fulfilled, (state, action) => {
+        state.loading.computo = false;
+        state.computo = action.payload;
+      })
+      .addCase(fetchComputo.rejected, (state, action) => {
+        state.loading.computo = false;
+        state.error = action.error.message ?? null;
+      })
+
+      .addCase(fetchCalculoArmaduraConDiametros.fulfilled, (state, action) => {
+        state.calculoArmadura = action.payload;
       });
   },
 });
