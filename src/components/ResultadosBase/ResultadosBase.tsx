@@ -44,10 +44,25 @@ import {
   faFileExcel,
   faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
+import type { AnyAction } from "redux";
+import type { RootState } from "../../store/index.ts";
+import type { ThunkAction } from "@reduxjs/toolkit";
 
 const BAR_DIAMETERS = [10, 12, 16, 20, 25];
 
-const stepsConfig = (baseId: number) => [
+type AppThunk<ReturnType = unknown> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  AnyAction
+>;
+
+type ThunkStep = {
+  label: string;
+  action: () => AppThunk;
+};
+
+const stepsConfig = (baseId: number): ThunkStep[] => [
   {
     action: () => fetchDimensionesBase(baseId),
     label: "Estimando dimensiones...",
@@ -71,8 +86,14 @@ const stepsConfig = (baseId: number) => [
     label: "Calculando armadura...",
   },
   { action: () => fetchComputo(baseId), label: "Realizando cómputo..." },
-  { action: () => Promise.resolve(), label: "Resumiendo verificaciones..." },
-  { action: () => Promise.resolve(), label: "Generando diagramas..." },
+  {
+    action: () => () => Promise.resolve("Resumen listo"),
+    label: "Resumiendo verificaciones...",
+  },
+  {
+    action: () => () => Promise.resolve("Diagramas generados"),
+    label: "Generando diagramas...",
+  },
 ];
 
 const ResultadosBase: React.FC = () => {
@@ -103,57 +124,50 @@ const ResultadosBase: React.FC = () => {
 
   const steps = baseId ? stepsConfig(baseId) : [];
 
-  // Fetch base
   useEffect(() => {
     if (baseId) dispatch(fetchBaseHormigon(baseId));
   }, [baseId, dispatch]);
 
   useEffect(() => {
     if (!baseId || !automatico) return;
-
-    const runSteps = async () => {
-      setShowResults(true);
-      for (let i = 0; i < steps.length; i++) {
-        const { action, label } = steps[i];
-        setStatusMessage(label);
-        setProgress(((i + 1) / steps.length) * 100);
-
-        try {
-          const result = action();
-          if (result instanceof Promise) {
-            await result;
-          } else {
-            await dispatch(result).unwrap();
-          }
-        } catch (err) {
-          console.error(`Error en paso "${label}":`, err);
-          setStatusMessage(`Error en: ${label}`);
-          break;
-        }
-
-        await new Promise((res) => setTimeout(res, 1000));
-        setCurrentStep(i + 1);
-      }
-    };
-
+    setShowResults(true);
     runSteps();
   }, [baseId, automatico, dispatch]);
+
+  const executeStep = async (stepIndex: number) => {
+    const { action, label } = steps[stepIndex];
+    setStatusMessage(label);
+    setProgress(((stepIndex + 1) / steps.length) * 100);
+
+    try {
+      const result = dispatch(action()) as { unwrap: () => Promise<unknown> };
+      if ("unwrap" in result && typeof result.unwrap === "function") {
+        await result.unwrap();
+      } else {
+        await result;
+      }
+    } catch (err) {
+      console.error(`Error en paso "${label}":`, err);
+      setStatusMessage(`Error en: ${label}`);
+      return false;
+    }
+
+    await new Promise((res) => setTimeout(res, 1000));
+    setCurrentStep(stepIndex + 1);
+    return true;
+  };
+
+  const runSteps = async () => {
+    for (let i = 0; i < steps.length; i++) {
+      const success = await executeStep(i);
+      if (!success) break;
+    }
+  };
 
   const handleNextStep = async () => {
     if (!showResults) setShowResults(true);
     if (currentStep < steps.length) {
-      const { action, label } = steps[currentStep];
-      setStatusMessage(label);
-      setProgress(((currentStep + 1) / steps.length) * 100);
-
-      try {
-        await dispatch(action()).unwrap();
-      } catch (err) {
-        console.error(`Error en paso "${label}":`, err);
-        setStatusMessage(`Error en: ${label}`);
-      }
-
-      setCurrentStep((prev) => prev + 1);
+      await executeStep(currentStep);
     }
   };
 

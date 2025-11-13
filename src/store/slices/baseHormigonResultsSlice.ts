@@ -1,8 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/api";
 import type { BaseHormigon } from "../../types/BaseHormigon";
 import type { BaseHormigonDimensiones } from "../../types/BaseHormigonDimensiones";
@@ -297,5 +293,18 @@ const baseHormigonResultsSlice = createSlice({
       });
   },
 });
+
+export const baseHormigonThunks = {
+  fetchBaseHormigon,
+  fetchDimensionesBase,
+  fetchEsfuerzosBase,
+  fetchVerificacionesBase,
+  fetchCalculoCuantia,
+  fetchVerificaPunzonado,
+  fetchVerificaCorte,
+  fetchCalculoArmadura,
+  fetchComputo,
+  fetchCalculoArmaduraConDiametros,
+};
 
 export default baseHormigonResultsSlice.reducer;

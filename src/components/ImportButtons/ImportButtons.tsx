@@ -7,7 +7,7 @@ import "./ImportButtons.scss";
 interface ImportButtonsProps {
   importing: boolean;
   setImporting: React.Dispatch<React.SetStateAction<boolean>>;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   navigate: NavigateFunction;
 }
 

@@ -29,7 +29,6 @@ const FormulasCalculoArmadura: React.FC<Props> = ({
   const ay = dimensionesBase.anchoY * 100; // convert to cm
   const ax = dimensionesBase.anchoX * 100; // convert to cm
   const cc = base.recubrimientoHormigon.valor; // cm
-  const d = base.diametroBarrasX.valor; // cm
   const db = base.diametroBarrasX.valor; // cm
 
   const Nx = calculoArmadura.cantidadBarrasX;

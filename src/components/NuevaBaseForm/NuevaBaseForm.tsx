@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import type { BaseHormigon } from "../../types/BaseHormigon";
+import type { ValueUnitPair } from "../../types/ValueUnitPair";
 import "./NuevaBaseForm.scss";
 import ImportButtons from "../ImportButtons/ImportButtons";
 import CampoInput from "../CampoInput/CampoInput";
@@ -50,7 +51,7 @@ const NuevaBaseForm: React.FC = () => {
   const [formData, setFormData] = useState(initialState);
   const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
   const [importing, setImporting] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const camposBasicos: FormFieldKey[] = [
     "esfuerzoAxil",
@@ -73,7 +74,7 @@ const NuevaBaseForm: React.FC = () => {
           const { data } = await api.get<BaseHormigon>(
             `baseshormigon/${baseId}`
           );
-          const { id, ...rest } = data;
+          const { ...rest } = data;
           setFormData(rest);
         } catch (err) {
           console.error("Error fetching base data:", err);
@@ -88,13 +89,26 @@ const NuevaBaseForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     key: FormFieldKey
   ) => {
+    const current = formData[key];
+    if (typeof current === "string") return;
+
     setFormData({
       ...formData,
       [key]: {
         valor: parseFloat(e.target.value) || 0,
-        unidad: formData[key].unidad,
-        tipo: formData[key].tipo,
+        unidad: current.unidad,
+        tipo: current.tipo,
       },
+    });
+  };
+
+  const handleUnitChange = (key: FormFieldKey, unidad: string) => {
+    const current = formData[key];
+    if (typeof current === "string") return;
+
+    setFormData({
+      ...formData,
+      [key]: { ...current, unidad },
     });
   };
 
@@ -143,14 +157,9 @@ const NuevaBaseForm: React.FC = () => {
             <CampoInput
               key={key}
               name={key}
-              data={formData[key]}
+              data={formData[key] as ValueUnitPair}
               onChange={(e) => handleChange(e, key)}
-              onUnitChange={(unidad) =>
-                setFormData({
-                  ...formData,
-                  [key]: { ...formData[key], unidad },
-                })
-              }
+              onUnitChange={(unidad) => handleUnitChange(key, unidad)}
             />
           ))}
 
@@ -171,14 +180,9 @@ const NuevaBaseForm: React.FC = () => {
               <CampoInput
                 key={key}
                 name={key}
-                data={formData[key]}
+                data={formData[key] as ValueUnitPair}
                 onChange={(e) => handleChange(e, key)}
-                onUnitChange={(unidad) =>
-                  setFormData({
-                    ...formData,
-                    [key]: { ...formData[key], unidad },
-                  })
-                }
+                onUnitChange={(unidad) => handleUnitChange(key, unidad)}
               />
             ))}
 

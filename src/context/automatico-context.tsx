@@ -1,9 +1,21 @@
-// context/automatico-context.tsx
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
-const AutomaticoContext = createContext(null);
+interface AutomaticoContextType {
+  automatico: boolean;
+  setAutomatico: (value: boolean) => void;
+  invertirResultados: boolean;
+  setInvertirResultados: (value: boolean) => void;
+  mostrarFormulas: boolean;
+  setMostrarFormulas: (value: boolean) => void;
+}
 
-export const AutomaticoProvider = ({ children }) => {
+const AutomaticoContext = createContext<AutomaticoContextType | undefined>(
+  undefined
+);
+
+export const AutomaticoProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [automatico, setAutomatico] = useState(true);
   const [invertirResultados, setInvertirResultados] = useState(false);
   const [mostrarFormulas, setMostrarFormulas] = useState(true);
@@ -24,4 +36,12 @@ export const AutomaticoProvider = ({ children }) => {
   );
 };
 
-export const useAutomatico = () => useContext(AutomaticoContext);
+export const useAutomatico = () => {
+  const context = useContext(AutomaticoContext);
+  if (context === undefined) {
+    throw new Error(
+      "useAutomatico debe usarse dentro de un AutomaticoProvider"
+    );
+  }
+  return context;
+};
