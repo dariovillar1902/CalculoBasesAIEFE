@@ -58,7 +58,6 @@ const initialState: BaseHormigonResultsState = {
   error: null,
 };
 
-// Fetch individual base data
 export const fetchBaseHormigon = createAsyncThunk<BaseHormigon, number>(
   "baseHormigon/fetchBase",
   async (id) => {
