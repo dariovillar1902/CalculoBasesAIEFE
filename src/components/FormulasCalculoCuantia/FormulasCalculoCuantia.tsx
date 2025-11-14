@@ -1,29 +1,39 @@
+// Importa los estilos específicos para mostrar fórmulas de cuantía
 import "./FormulasCalculoCuantia.scss";
+// Componente que muestra una fórmula con su resultado y explicación
 import FormulaBlock from "../FormulaBlock/FormulaBlock";
+
+// Tipos que definen la estructura de los datos utilizados en el cálculo
 import type { BaseHormigon } from "../../types/BaseHormigon";
 import type { BaseHormigonDimensiones } from "../../types/BaseHormigonDimensiones";
 import type { BaseHormigonCuantia } from "../../types/BaseHormigonCuantia";
 
+// Define las propiedades que recibe el componente
 type Props = {
-  base: BaseHormigon;
-  dimensionesBase: BaseHormigonDimensiones;
-  calculoCuantia: BaseHormigonCuantia;
-  showFormulas: boolean;
+  base: BaseHormigon; // Datos generales de la base de hormigón
+  dimensionesBase: BaseHormigonDimensiones; // Dimensiones físicas de la base
+  calculoCuantia: BaseHormigonCuantia; // Resultados del cálculo de cuantía
+  showFormulas: boolean; // Indica si se deben mostrar las fórmulas matemáticas
 };
 
+// Componente que muestra las fórmulas utilizadas para calcular la cuantía de acero
 const FormulasCalculoCuantia: React.FC<Props> = ({
   base,
   dimensionesBase,
   calculoCuantia,
   showFormulas,
 }) => {
+  // Calcula la carga muerta (PD) y carga viva (PL) en función del esfuerzo axial
   const PD = (base.porcentajeCargaD.valor / 100) * base.esfuerzoAxil.valor;
   const PL = (base.porcentajeCargaL.valor / 100) * base.esfuerzoAxil.valor;
 
+  // Extrae dimensiones de la base y columna
   const ax = dimensionesBase.anchoX;
   const ay = dimensionesBase.anchoY;
   const cx = base.anchoColumnaX.valor;
   const cy = base.anchoColumnaY.valor;
+
+  // Calcula la altura útil de la base (d), descontando recubrimiento y diámetro de barra
   const d = dimensionesBase.altura - base.recubrimientoHormigon.valor - 0.02;
 
   return (
@@ -31,9 +41,10 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
       <div className="cuantia-container">
         <h2 className="cuantia-title">Cálculo de Cuantía</h2>
 
+        {/* Cálculo del esfuerzo axial mayorado según combinaciones de carga */}
         <FormulaBlock
           title="Esfuerzo Axial Mayorado"
-          tooltip={`P_D: Carga muerta<br/>P_L: Carga viva`}
+          tooltip={`PD: Carga muerta<br/>PL: Carga viva`}
           symbolic="P_u = \max \left( 1.4 P_D,\ 1.2 P_D + 1.6 P_L \right)"
           substituted={`P_u = \\max \\left( 1.4 \\cdot ${PD.toFixed(
             2
@@ -45,11 +56,12 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo de carga mayorada sobre la base */}
         <FormulaBlock
           title="Carga Mayorada"
-          tooltip={`Pᵤ: Esfuerzo mayorado<br/>aₓ, aᵧ: Dimensiones`}
+          tooltip={`Pu: Esfuerzo mayorado<br/>ax, ay: Dimensiones`}
           symbolic="q_u = \frac{P_u}{a_x \cdot a_y}"
-          substituted={`q_u = \\frac{${calculoCuantia.esfuerzoAxilMayorado.toFixed(
+          substituted={`q_u = \\frac${calculoCuantia.esfuerzoAxilMayorado.toFixed(
             2
           )}\\ \\text{kN}}{${ax.toFixed(2)}\\ \\text{m} \\cdot ${ay.toFixed(
             2
@@ -59,9 +71,10 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del momento flector mayorado en dirección X */}
         <FormulaBlock
           title="Momento Mayorado X"
-          tooltip={`qᵤ: Carga mayorada<br/>aₓ, cₓ: Dimensión y excentricidad<br/>aᵧ: Dimensión transversal`}
+          tooltip={`qu: Carga mayorada<br/>ax, cx: Dimensión y excentricidad<br/>ay: Dimensión transversal`}
           symbolic="M_{ux} = q_u \cdot \frac{(a_x - c_x)^2}{8} \cdot a_y"
           substituted={`M_{ux} = ${calculoCuantia.cargaMayorada.toFixed(
             2
@@ -75,9 +88,10 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del momento flector mayorado en dirección Y */}
         <FormulaBlock
           title="Momento Mayorado Y"
-          tooltip={`qᵤ: Carga mayorada<br/>aᵧ, cᵧ: Dimensión y excentricidad<br/>aₓ: Dimensión transversal`}
+          tooltip={`qu: Carga mayorada<br/>ay, cy: Dimensión y excentricidad<br/>ax: Dimensión transversal`}
           symbolic="M_{uy} = q_u \cdot \frac{(a_y - c_y)^2}{8} \cdot a_x"
           substituted={`M_{uy} = ${calculoCuantia.cargaMayorada.toFixed(
             2
@@ -91,9 +105,10 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del área de acero necesaria en dirección X */}
         <FormulaBlock
           title="Área Acero X"
-          tooltip={`ρₓ: Cuantía de acero<br/>aᵧ: Dimensión<br/>d: Altura útil`}
+          tooltip={`ρx: Cuantía de acero<br/>ay: Dimensión<br/>d: Altura útil`}
           symbolic="A_{sx} = \rho_x \cdot a_y \cdot d"
           substituted={`A_{sx} = ${calculoCuantia.cuantiaAdoptadaX.toFixed(
             4
@@ -105,9 +120,10 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del área de acero necesaria en dirección Y */}
         <FormulaBlock
           title="Área Acero Y"
-          tooltip={`ρᵧ: Cuantía de acero<br/>aₓ: Dimensión<br/>d: Altura útil`}
+          tooltip={`ρy: Cuantía de acero<br/>ax: Dimensión<br/>d: Altura útil`}
           symbolic="A_{sy} = \rho_y \cdot a_x \cdot d"
           substituted={`A_{sy} = ${calculoCuantia.cuantiaAdoptadaY.toFixed(
             4

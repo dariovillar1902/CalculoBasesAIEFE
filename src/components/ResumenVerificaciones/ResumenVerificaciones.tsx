@@ -6,14 +6,18 @@ import type { BaseHormigonDimensiones } from "../../types/BaseHormigonDimensione
 import type { BaseHormigonVerificacionCorte } from "../../types/BaseHormigonVerificacionCorte";
 import type { BaseHormigonVerificacionPunzonado } from "../../types/BaseHormigonVerificacionPunzonado";
 
+// Componente que muestra un resumen de todas las verificaciones realizadas para la base
+// Incluye vuelco, tensiones, asentamientos, punzonado y corte
+// Está pensado para que cualquier persona, incluso no programadora, pueda entender qué se está evaluando
+
 type Props = {
-  esfuerzosBase: BaseHormigonEsfuerzos;
-  base: BaseHormigon;
-  dimensionesBase: BaseHormigonDimensiones;
-  verificacionesBase: BaseHormigonVerificaciones;
-  verificaCorte: BaseHormigonVerificacionCorte;
-  verificaPunzonado: BaseHormigonVerificacionPunzonado;
-  showFormulas: boolean;
+  esfuerzosBase: BaseHormigonEsfuerzos; // Esfuerzos que actúan en la base
+  base: BaseHormigon; // Datos principales de la base de hormigón
+  dimensionesBase: BaseHormigonDimensiones; // Dimensiones geométricas calculadas
+  verificacionesBase: BaseHormigonVerificaciones; // Resultados de verificaciones generales
+  verificaCorte: BaseHormigonVerificacionCorte; // Verificación estructural a corte
+  verificaPunzonado: BaseHormigonVerificacionPunzonado; // Verificación estructural a punzonado
+  showFormulas: boolean; // Indica si se deben mostrar las fórmulas matemáticas
 };
 
 const ResumenVerificaciones: React.FC<Props> = ({
@@ -23,6 +27,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
   verificaPunzonado,
   showFormulas,
 }) => {
+  // Desestructuramos los valores más importantes para simplificar el código y hacerlo más legible
   const {
     coeficienteSeguridadVuelco,
     verificaVuelco,
@@ -34,20 +39,25 @@ const ResumenVerificaciones: React.FC<Props> = ({
 
   return (
     <div className="katex-container">
+      {" "}
+      {/* Contenedor general que mantiene el estilo de fórmulas */}
       <div className="verificacion-container">
-        <h2 className="verificacion-title">Resumen de Verificaciones</h2>
-
+        {" "}
+        {/* Contenedor principal de la sección */}
+        <h2 className="verificacion-title">Resumen de Verificaciones</h2>{" "}
+        {/* Título principal */}
+        {/* Cada FormulaBlock representa una verificación estructural o geotécnica */}
         <FormulaBlock
-          title="Verificación de Vuelco"
-          tooltip="Debe cumplirse FSv ≥ 1.5"
-          symbolic={`FS_{v} \\geq 1.5`}
+          title="Verificación de Vuelco" // Nombre de la verificación
+          tooltip="Debe cumplirse FSv ≥ 1.5" // Aclaración explicativa
+          symbolic={`FS_{v} \\geq 1.5`} // Fórmula simbólica
           substituted={`FS_{v} = ${coeficienteSeguridadVuelco.toFixed(
             2
-          )} \\geq 1.5`}
-          result={verificaVuelco ? "Sí" : "No"}
+          )} \\geq 1.5`} // Fórmula con valores sustituidos
+          result={verificaVuelco ? "Sí" : "No"} // Indica si cumple o no
           showFormulas={showFormulas}
         />
-
+        {/* Verificación de tensiones máximas en la dirección X */}
         <FormulaBlock
           title="Verificación de tensión Máxima X"
           tooltip="La tensión máxima en X debe ser menor o igual a 1.25·qadm"
@@ -64,6 +74,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           }
           showFormulas={showFormulas}
         />
+        {/* Verificación de tensiones máximas en Y */}
         <FormulaBlock
           title="Verificación de tensión Máxima Y"
           tooltip="La tensión máxima en Y debe ser menor o igual a 1.25·qadm"
@@ -80,6 +91,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           }
           showFormulas={showFormulas}
         />
+        {/* Verificación de tensión promedio en X */}
         <FormulaBlock
           title="Verificación de tensiones X"
           tooltip="El promedio de tensiones en X debe ser menor o igual a qadm"
@@ -98,6 +110,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           }
           showFormulas={showFormulas}
         />
+        {/* Verificación de tensión promedio en Y */}
         <FormulaBlock
           title="Verificación de tensiones Y"
           tooltip="El promedio de tensiones en Y debe ser menor o igual a qadm"
@@ -116,7 +129,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           }
           showFormulas={showFormulas}
         />
-
+        {/* Verificación de asentamiento medio */}
         <FormulaBlock
           title="Verificación de Asentamiento Medio"
           tooltip="Debe cumplirse s_med ≤ 35 mm"
@@ -127,7 +140,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           result={verificaAsentamientoMedio ? "Sí" : "No"}
           showFormulas={showFormulas}
         />
-
+        {/* Verificación de asentamiento diferencial (distorsión angular) */}
         <FormulaBlock
           title="Verificación de Asentamiento Diferencial"
           tooltip="Debe cumplirse β ≤ 1/500"
@@ -136,11 +149,11 @@ const ResumenVerificaciones: React.FC<Props> = ({
           result={verificaAsentamientoDiferencial ? "Sí" : "No"}
           showFormulas={showFormulas}
         />
-
+        {/* Verificación estructural a punzonado */}
         <FormulaBlock
           title="Verificación a Punzonado"
-          tooltip={`Verifica que Vᵤ ≤ V_d<br/>Si se cumple, la base resiste el punzonado`}
-          symbolic="V_u \leq V_d"
+          tooltip={`Verifica que Vu ≤ V_d<br/>Si se cumple, la base resiste el punzonado`}
+          symbolic="V_u \\leq V_d"
           substituted={`V_u = ${verificaPunzonado.resistenciaRequerida.toFixed(
             2
           )}\\ \\text{kN} \\leq ${verificaPunzonado.resistenciaDiseno.toFixed(
@@ -148,13 +161,13 @@ const ResumenVerificaciones: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaPunzonado.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
-          reference="Art. 11.12.2.2 CIRSOC 201-05. Página 287"
+          reference="Art. 11.12.2.2 CIRSOC 201-05. Página 287" // Referencia normativa
         />
-
+        {/* Verificación estructural a corte */}
         <FormulaBlock
           title="Verificación a Corte"
-          tooltip={`Verifica que Vᵤₓ ≤ V_dₓ y Vᵤᵧ ≤ V_dᵧ<br/>Si ambas condiciones se cumplen, la base es segura frente al corte`}
-          symbolic="V_{ux} \leq V_{dx}, \quad V_{uy} \leq V_{dy}"
+          tooltip={`Verifica que Vux ≤ Vdx y Vuy ≤ Vdy<br/>Si ambas condiciones se cumplen, la base es segura frente al corte`}
+          symbolic="V_{ux} \\leq V_{dx}, \\quad V_{uy} \\leq V_{dy}"
           substituted={`V_{ux} = ${verificaCorte.resistenciaRequeridaX.toFixed(
             2
           )}\\ \\text{kN} \\leq ${verificaCorte.resistenciaDisenoX.toFixed(
@@ -166,7 +179,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaCorte.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
-          reference="Art. 11.12.2.1 CIRSOC 201-05. Página 286"
+          reference="Art. 11.12.2.1 CIRSOC 201-05. Página 286" // Referencia normativa
         />
       </div>
     </div>

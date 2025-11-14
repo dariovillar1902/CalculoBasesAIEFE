@@ -1,6 +1,9 @@
+// Diccionario que asocia cada nombre de campo con una descripción legible.
+// Estas descripciones se usan normalmente para tooltips, etiquetas o ayuda contextual en formularios.
 export const fieldDescriptions: Record<string, string> = {
   nombre: "Nombre identificador de la base",
 
+  // Esfuerzos y cargas aplicadas a la base
   esfuerzoAxil: "Fuerza axial aplicada sobre la base",
   esfuerzoCorteX: "Esfuerzo cortante en dirección X",
   esfuerzoCorteY: "Esfuerzo cortante en dirección Y",
@@ -9,6 +12,7 @@ export const fieldDescriptions: Record<string, string> = {
   cargaAdmisible: "Presión máxima que el suelo puede soportar",
   moduloBalastoVertical: "Módulo de balasto vertical del suelo",
 
+  // Datos geométricos y parámetros de carga
   porcentajeCargaD: "Porcentaje de carga muerta aplicada",
   porcentajeCargaL: "Porcentaje de carga viva aplicada",
   anchoColumnaX: "Ancho de la columna en dirección X",
@@ -22,6 +26,8 @@ export const fieldDescriptions: Record<string, string> = {
   tensionFluenciaAcero: "Tensión de fluencia del acero de refuerzo",
   diametroBarrasX: "Diámetro de las barras de refuerzo en dirección X",
   diametroBarrasY: "Diámetro de las barras de refuerzo en dirección Y",
+
+  // Parámetros económicos y de costos
   costoM3Hormigon:
     "Precio por m3 de Hormigón (valor de referencia Noviembre 2025, para H25)",
   costoKgAcero:
@@ -31,6 +37,8 @@ export const fieldDescriptions: Record<string, string> = {
   coeficienteEsponjamiento: "Coeficiente de esponjamiento del suelo",
 };
 
+// Opciones de unidades disponibles por tipo de magnitud.
+// Se utilizan para poblar selects dinámicos según el tipo de campo.
 export const unitOptions: Record<string, string[]> = {
   fuerza: ["N", "kN", "tf"],
   momento: ["N·m", "kN·m", "tf·m"],
@@ -39,6 +47,6 @@ export const unitOptions: Record<string, string[]> = {
   porcentaje: ["%", "-"],
   longitud: ["mm", "cm", "m"],
   densidad: ["kN/m³", "N/m³", "kg/m³"],
-  texto: [],
-  precio: ["$"],
+  texto: [], // Para campos sin unidad
+  precio: ["$"], // Para valores monetarios
 };

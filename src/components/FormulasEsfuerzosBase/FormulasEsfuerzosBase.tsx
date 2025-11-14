@@ -1,22 +1,30 @@
+// Importa los estilos específicos para mostrar fórmulas de esfuerzos
 import "./FormulasEsfuerzosBase.scss";
+
+// Importa el componente que muestra cada fórmula con su resultado
 import FormulaBlock from "../FormulaBlock/FormulaBlock";
+
+// Tipos que definen la estructura de los datos utilizados en el cálculo
 import type { BaseHormigon } from "../../types/BaseHormigon";
 import type { BaseHormigonDimensiones } from "../../types/BaseHormigonDimensiones";
 import type { BaseHormigonEsfuerzos } from "../../types/BaseHormigonEsfuerzos";
 
+// Define las propiedades que recibe el componente
 type Props = {
-  base: BaseHormigon;
-  dimensionesBase: BaseHormigonDimensiones;
-  esfuerzosBase: BaseHormigonEsfuerzos;
-  showFormulas: boolean;
+  base: BaseHormigon; // Datos generales de la base de hormigón
+  dimensionesBase: BaseHormigonDimensiones; // Dimensiones físicas de la base
+  esfuerzosBase: BaseHormigonEsfuerzos; // Resultados del cálculo de esfuerzos
+  showFormulas: boolean; // Indica si se deben mostrar las fórmulas matemáticas
 };
 
+// Componente que muestra las fórmulas utilizadas para calcular los esfuerzos sobre la base
 const FormulasEsfuerzosBase: React.FC<Props> = ({
   base,
   dimensionesBase,
   esfuerzosBase,
   showFormulas,
 }) => {
+  // Extrae las dimensiones necesarias para los cálculos
   const { anchoX: b_x, anchoY: b_y, altura: h } = dimensionesBase;
 
   return (
@@ -24,6 +32,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
       <div className="esfuerzos-container">
         <h2 className="esfuerzos-title">Esfuerzos en la Base</h2>
 
+        {/* Cálculo del esfuerzo normal total sobre la base */}
         <FormulaBlock
           title="Esfuerzo Normal Total"
           tooltip="Incluye carga aplicada, peso propio del hormigón y peso del suelo sobre la base"
@@ -52,6 +61,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del momento total en dirección X */}
         <FormulaBlock
           title="Momento en X"
           tooltip="Momento total respecto a X, incluye efecto de la carga cortante en X"
@@ -68,6 +78,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del momento total en dirección Y */}
         <FormulaBlock
           title="Momento en Y"
           tooltip="Momento total respecto a Y, incluye efecto de la carga cortante en Y"
@@ -84,6 +95,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del esfuerzo cortante en dirección X */}
         <FormulaBlock
           title="Corte en X"
           tooltip="Carga cortante en X"
@@ -94,6 +106,7 @@ const FormulasEsfuerzosBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* Cálculo del esfuerzo cortante en dirección Y */}
         <FormulaBlock
           title="Corte en Y"
           tooltip="Carga cortante en Y"

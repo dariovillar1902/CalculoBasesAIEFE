@@ -10,12 +10,17 @@ import NombreInput from "../NombreInput/NombreInput";
 
 const NuevaBaseForm: React.FC = () => {
   const navigate = useNavigate();
+  // Hook de navegación para redirigir después de guardar
+
   const location = useLocation();
   const baseId = location.state?.baseId;
+  // Si se llega desde edición, viene con baseId
 
+  // Estado inicial del formulario (sin incluir ID porque se genera en backend)
   const initialState: Omit<BaseHormigon, "id"> = {
     nombre: "",
 
+    // Valores básicos
     esfuerzoAxil: { valor: 0, unidad: "kN", tipo: "fuerza" },
     cargaAdmisible: { valor: 0, unidad: "kPa", tipo: "presion" },
     corteX: { valor: 0, unidad: "kN", tipo: "fuerza" },
@@ -24,12 +29,13 @@ const NuevaBaseForm: React.FC = () => {
     momentoY: { valor: 0, unidad: "kN·m", tipo: "momento" },
     moduloBalasto: { valor: 0, unidad: "kN/m³", tipo: "rigidez" },
 
+    // Valores avanzados
     porcentajeCargaD: { valor: 60, unidad: "%", tipo: "porcentaje" },
     porcentajeCargaL: { valor: 40, unidad: "%", tipo: "porcentaje" },
     anchoColumnaX: { valor: 30, unidad: "cm", tipo: "longitud" },
     anchoColumnaY: { valor: 30, unidad: "cm", tipo: "longitud" },
     pesoEspecificoSuelo: { valor: 17, unidad: "kN/m³", tipo: "densidad" },
-    nivelFundacion: { valor: 50, unidad: "cm", tipo: "longitud" },
+    nivelFundacion: { valor: 200, unidad: "cm", tipo: "longitud" },
     pesoEspecificoHormigon: { valor: 24, unidad: "kN/m³", tipo: "densidad" },
     resistenciaCaracteristicaHormigon: {
       valor: 25,
@@ -49,10 +55,18 @@ const NuevaBaseForm: React.FC = () => {
   type FormFieldKey = keyof typeof initialState;
 
   const [formData, setFormData] = useState(initialState);
-  const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
-  const [importing, setImporting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Datos del formulario (componente controlado)
 
+  const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
+  // Toggle para mostrar u ocultar campos avanzados
+
+  const [importing, setImporting] = useState(false);
+  // Estado visual del botón "Importar archivo"
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Referencia al input oculto usado en ImportButtons
+
+  // Campos principales que van arriba del formulario
   const camposBasicos: FormFieldKey[] = [
     "esfuerzoAxil",
     "cargaAdmisible",
@@ -63,10 +77,12 @@ const NuevaBaseForm: React.FC = () => {
     "moduloBalasto",
   ];
 
+  // El resto se considera "avanzado"
   const camposAvanzados = Object.keys(formData).filter(
     (key) => !["nombre", ...camposBasicos].includes(key)
   ) as FormFieldKey[];
 
+  // Si viene baseId, trae la base para edición
   useEffect(() => {
     const fetchBase = async () => {
       if (baseId) {
@@ -74,7 +90,7 @@ const NuevaBaseForm: React.FC = () => {
           const { data } = await api.get<BaseHormigon>(
             `baseshormigon/${baseId}`
           );
-          const { ...rest } = data;
+          const { ...rest } = data; // omite ID
           setFormData(rest);
         } catch (err) {
           console.error("Error fetching base data:", err);
@@ -85,11 +101,14 @@ const NuevaBaseForm: React.FC = () => {
     fetchBase();
   }, [baseId]);
 
+  // Cambios para campos que contienen { valor, unidad, tipo }
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     key: FormFieldKey
   ) => {
     const current = formData[key];
+
+    // Seguridad: si es texto puro, no modifica acá
     if (typeof current === "string") return;
 
     setFormData({
@@ -102,6 +121,7 @@ const NuevaBaseForm: React.FC = () => {
     });
   };
 
+  // Manejo de cambio de unidad (cm → m, por ejemplo)
   const handleUnitChange = (key: FormFieldKey, unidad: string) => {
     const current = formData[key];
     if (typeof current === "string") return;
@@ -112,6 +132,7 @@ const NuevaBaseForm: React.FC = () => {
     });
   };
 
+  // Para campos puramente textuales (como nombre)
   const handleTextChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     key: FormFieldKey
@@ -119,6 +140,7 @@ const NuevaBaseForm: React.FC = () => {
     setFormData({ ...formData, [key]: e.target.value });
   };
 
+  // Guardado final (POST si nueva base, PUT si edición)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -137,6 +159,7 @@ const NuevaBaseForm: React.FC = () => {
 
   return (
     <div className="container">
+      {/* Componente para importar Excel o descargar plantilla */}
       <ImportButtons
         importing={importing}
         fileInputRef={fileInputRef}
@@ -146,13 +169,18 @@ const NuevaBaseForm: React.FC = () => {
 
       <div className="card">
         <h2 className="title">Crear Nueva Base</h2>
+
+        {/* Imagen ilustrativa de cargas */}
         <img src="/fotoCargas.png" className="fotoCargas" />
+
         <form onSubmit={handleSubmit} className="formGrid">
+          {/* Campo de nombre */}
           <NombreInput
             value={formData.nombre}
             onChange={(e) => handleTextChange(e, "nombre")}
           />
 
+          {/* Campos principales */}
           {camposBasicos.map((key) => (
             <CampoInput
               key={key}
@@ -163,6 +191,7 @@ const NuevaBaseForm: React.FC = () => {
             />
           ))}
 
+          {/* Botón para mostrar/ocultar ajustes avanzados */}
           <div className="fullWidth">
             <button
               type="button"
@@ -175,6 +204,7 @@ const NuevaBaseForm: React.FC = () => {
             </button>
           </div>
 
+          {/* Campos avanzados (aparecen solo si se activan) */}
           {mostrarAvanzados &&
             camposAvanzados.map((key) => (
               <CampoInput
@@ -186,6 +216,7 @@ const NuevaBaseForm: React.FC = () => {
               />
             ))}
 
+          {/* Botón de submit */}
           <div className="fullWidth">
             <button type="submit" className="submitButton">
               Crear Base

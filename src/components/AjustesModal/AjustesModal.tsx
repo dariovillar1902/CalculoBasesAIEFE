@@ -1,29 +1,38 @@
 import React from "react";
+// Importa el contexto que maneja los estados de los ajustes automáticos
 import { useAutomatico } from "../../context/automatico-context";
+// Importa los estilos específicos para este componente
 import "./AjustesModal.scss";
 
+// Define las propiedades que recibe el componente AjustesModal
 interface AjustesModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean; // Indica si el modal está abierto o cerrado
+  onClose: () => void; // Función que se ejecuta para cerrar el modal
 }
 
+// Componente principal que muestra el modal de ajustes
 const AjustesModal: React.FC<AjustesModalProps> = ({ isOpen, onClose }) => {
+  // Extrae del contexto los valores actuales y funciones para modificar los ajustes
   const {
-    automatico,
-    setAutomatico,
-    invertirResultados,
-    setInvertirResultados,
-    mostrarFormulas,
-    setMostrarFormulas,
+    automatico, // Indica si el procesamiento automático está activado
+    setAutomatico, // Función para activar/desactivar el procesamiento automático
+    invertirResultados, // Indica si se deben invertir los resultados
+    setInvertirResultados, // Función para cambiar el orden de los resultados
+    mostrarFormulas, // Indica si se deben mostrar las fórmulas
+    setMostrarFormulas, // Función para mostrar/ocultar las fórmulas
   } = useAutomatico();
 
+  // Si el modal no está abierto, no se muestra nada en pantalla
   if (!isOpen) return null;
 
   return (
+    // Fondo oscuro que cubre la pantalla y permite cerrar el modal al hacer clic fuera
     <div className="ajustes-modal-backdrop" onClick={onClose}>
+      {/* Contenedor principal del modal. El click en este div no cierra el modal */}
       <div className="ajustes-modal" onClick={(e) => e.stopPropagation()}>
         <h2>Ajustes</h2>
 
+        {/* Opción para activar o desactivar el procesamiento automático */}
         <label className="ajuste-item">
           <input
             type="checkbox"
@@ -33,6 +42,7 @@ const AjustesModal: React.FC<AjustesModalProps> = ({ isOpen, onClose }) => {
           Activar procesamiento automático
         </label>
 
+        {/* Opción para invertir el orden de los resultados */}
         <label className="ajuste-item">
           <input
             type="checkbox"
@@ -42,6 +52,7 @@ const AjustesModal: React.FC<AjustesModalProps> = ({ isOpen, onClose }) => {
           Invertir orden de resultados
         </label>
 
+        {/* Opción para mostrar u ocultar las fórmulas utilizadas */}
         <label className="ajuste-item">
           <input
             type="checkbox"
@@ -51,6 +62,7 @@ const AjustesModal: React.FC<AjustesModalProps> = ({ isOpen, onClose }) => {
           Mostrar fórmulas
         </label>
 
+        {/* Sección con enlaces a reglamentos técnicos de referencia */}
         <div className="ajustes-section">
           <h3>Reglamentos de Referencia:</h3>
           <ul>
@@ -84,6 +96,7 @@ const AjustesModal: React.FC<AjustesModalProps> = ({ isOpen, onClose }) => {
           </ul>
         </div>
 
+        {/* Botón para cerrar el modal */}
         <button className="close-btn" onClick={onClose}>
           Cerrar
         </button>

@@ -1,5 +1,10 @@
+// Importamos herramientas de Redux Toolkit para crear slices y manejar acciones asíncronas
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+// Cliente HTTP centralizado para realizar llamadas a la API del backend
 import api from "../../utils/api";
+
+// Importamos los tipos de datos que devuelve cada endpoint del backend
 import type { BaseHormigon } from "../../types/BaseHormigon";
 import type { BaseHormigonDimensiones } from "../../types/BaseHormigonDimensiones";
 import type { BaseHormigonArmadura } from "../../types/BaseHormigonArmadura";
@@ -10,16 +15,19 @@ import type { BaseHormigonVerificaciones } from "../../types/BaseHormigonVerific
 import type { BaseHormigonEsfuerzos } from "../../types/BaseHormigonEsfuerzos";
 import type { BaseHormigonComputo } from "../../types/BaseHormigonComputo";
 
+// Estado general donde guardamos todos los resultados de cálculos de la base de hormigón
 interface BaseHormigonResultsState {
-  base: BaseHormigon | null;
-  dimensionesBase: BaseHormigonDimensiones | null;
-  esfuerzosBase: BaseHormigonEsfuerzos | null;
-  verificacionesBase: BaseHormigonVerificaciones | null;
-  verificaPunzonado: BaseHormigonVerificacionPunzonado | null;
-  verificaCorte: BaseHormigonVerificacionCorte | null;
-  calculoCuantia: BaseHormigonCuantia | null;
-  calculoArmadura: BaseHormigonArmadura | null;
-  computo: BaseHormigonComputo | null;
+  base: BaseHormigon | null; // Datos generales de la base
+  dimensionesBase: BaseHormigonDimensiones | null; // Dimensiones geométricas
+  esfuerzosBase: BaseHormigonEsfuerzos | null; // Esfuerzos calculados
+  verificacionesBase: BaseHormigonVerificaciones | null; // Verificaciones generales
+  verificaPunzonado: BaseHormigonVerificacionPunzonado | null; // Cálculo de punzonado
+  verificaCorte: BaseHormigonVerificacionCorte | null; // Cálculo por corte
+  calculoCuantia: BaseHormigonCuantia | null; // Cálculo de cuantía mínima / requerida
+  calculoArmadura: BaseHormigonArmadura | null; // Cálculo de armaduras según resultados
+  computo: BaseHormigonComputo | null; // Cómputo de materiales
+
+  // Flags que indican si un cálculo está en curso (útil para mostrar loaders en UI)
   loading: {
     base: boolean;
     dimensiones: boolean;
@@ -31,9 +39,12 @@ interface BaseHormigonResultsState {
     armadura: boolean;
     computo: boolean;
   };
+
+  // Si ocurre un error en alguna llamada a la API, se guarda acá
   error: string | null;
 }
 
+// Estado inicial cuando todavía no hay datos cargados
 const initialState: BaseHormigonResultsState = {
   base: null,
   dimensionesBase: null,
@@ -58,6 +69,7 @@ const initialState: BaseHormigonResultsState = {
   error: null,
 };
 
+// Acción asíncrona para obtener los datos generales de la base
 export const fetchBaseHormigon = createAsyncThunk<BaseHormigon, number>(
   "baseHormigon/fetchBase",
   async (id) => {
@@ -66,7 +78,7 @@ export const fetchBaseHormigon = createAsyncThunk<BaseHormigon, number>(
   }
 );
 
-// Fetch dimensionesBase
+// Acción asíncrona para obtener las dimensiones de la base
 export const fetchDimensionesBase = createAsyncThunk<
   BaseHormigonDimensiones,
   number
@@ -77,6 +89,7 @@ export const fetchDimensionesBase = createAsyncThunk<
   return response.data;
 });
 
+// Acción para traer esfuerzos de cálculo desde el backend
 export const fetchEsfuerzosBase = createAsyncThunk<
   BaseHormigonEsfuerzos,
   number
@@ -87,6 +100,7 @@ export const fetchEsfuerzosBase = createAsyncThunk<
   return response.data;
 });
 
+// Acción para traer verificaciones generales
 export const fetchVerificacionesBase = createAsyncThunk<
   BaseHormigonVerificaciones,
   number
@@ -97,6 +111,7 @@ export const fetchVerificacionesBase = createAsyncThunk<
   return response.data;
 });
 
+// Acción para calcular la cuantía de acero
 export const fetchCalculoCuantia = createAsyncThunk<
   BaseHormigonCuantia,
   number
@@ -107,6 +122,7 @@ export const fetchCalculoCuantia = createAsyncThunk<
   return response.data;
 });
 
+// Acción para calcular la armadura según los parámetros de la base
 export const fetchCalculoArmadura = createAsyncThunk<
   BaseHormigonArmadura,
   number
@@ -117,6 +133,7 @@ export const fetchCalculoArmadura = createAsyncThunk<
   return response.data;
 });
 
+// Acción para obtener el cómputo de materiales
 export const fetchComputo = createAsyncThunk<BaseHormigonComputo, number>(
   "baseHormigonResults/fetchComputo",
   async (id) => {
@@ -127,6 +144,7 @@ export const fetchComputo = createAsyncThunk<BaseHormigonComputo, number>(
   }
 );
 
+// Acción para verificar punzonado
 export const fetchVerificaPunzonado = createAsyncThunk<
   BaseHormigonVerificacionPunzonado,
   number
@@ -137,6 +155,7 @@ export const fetchVerificaPunzonado = createAsyncThunk<
   return response.data;
 });
 
+// Acción para verificar resistencia al corte
 export const fetchVerificaCorte = createAsyncThunk<
   BaseHormigonVerificacionCorte,
   number
@@ -147,6 +166,7 @@ export const fetchVerificaCorte = createAsyncThunk<
   return response.data;
 });
 
+// Acción especial donde se pueden enviar diámetros personalizados para recalcular armadura
 export const fetchCalculoArmaduraConDiametros = createAsyncThunk<
   BaseHormigonArmadura,
   { id: number; diametroX: number; diametroY: number }
@@ -156,6 +176,7 @@ export const fetchCalculoArmaduraConDiametros = createAsyncThunk<
     const response = await api.post<BaseHormigonArmadura>(
       `baseshormigon/calculoArmadura/${id}`,
       {
+        // Enviamos los diámetros elegidos por el usuario
         DiametroX: diametroX,
         DiametroY: diametroY,
       }
@@ -164,23 +185,29 @@ export const fetchCalculoArmaduraConDiametros = createAsyncThunk<
   }
 );
 
+// Slice que reúne el estado, los reducers y cómo manejar cada acción
 const baseHormigonResultsSlice = createSlice({
   name: "baseHormigonResults",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // A partir de acá, cada bloque maneja el ciclo de vida de cada llamada a la API:
+      // pending → comenzó la carga
+      // fulfilled → terminó con éxito
+      // rejected → salió mal
+
       // BASE
       .addCase(fetchBaseHormigon.pending, (state) => {
-        state.loading.base = true;
+        state.loading.base = true; // Indicamos que se está cargando
       })
       .addCase(fetchBaseHormigon.fulfilled, (state, action) => {
-        state.loading.base = false;
-        state.base = action.payload;
+        state.loading.base = false; // Terminó la carga
+        state.base = action.payload; // Guardamos el resultado
       })
       .addCase(fetchBaseHormigon.rejected, (state, action) => {
         state.loading.base = false;
-        state.error = action.error.message ?? null;
+        state.error = action.error.message ?? null; // Guardamos el error
       })
 
       // DIMENSIONES
@@ -287,12 +314,14 @@ const baseHormigonResultsSlice = createSlice({
         state.error = action.error.message ?? null;
       })
 
+      // ARMADURA CON DIÁMETROS PERSONALIZADOS
       .addCase(fetchCalculoArmaduraConDiametros.fulfilled, (state, action) => {
-        state.calculoArmadura = action.payload;
+        state.calculoArmadura = action.payload; // Reemplaza el cálculo anterior
       });
   },
 });
 
+// Exportamos todos los thunks juntos por comodidad
 export const baseHormigonThunks = {
   fetchBaseHormigon,
   fetchDimensionesBase,
@@ -306,4 +335,5 @@ export const baseHormigonThunks = {
   fetchCalculoArmaduraConDiametros,
 };
 
+// Exportamos el reducer final para el store de Redux
 export default baseHormigonResultsSlice.reducer;

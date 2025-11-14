@@ -5,12 +5,18 @@ import type { BaseHormigonEsfuerzos } from "../../types/BaseHormigonEsfuerzos";
 import type { BaseHormigon } from "../../types/BaseHormigon";
 import type { BaseHormigonDimensiones } from "../../types/BaseHormigonDimensiones";
 
+/*
+  Este componente muestra todas las fórmulas y verificaciones relacionadas
+  con la base de hormigón: vuelco, tensiones, asentamientos y distorsión angular.
+  Renderiza cada cálculo usando el componente FormulaBlock.
+*/
+
 type Props = {
-  esfuerzosBase: BaseHormigonEsfuerzos;
-  base: BaseHormigon;
-  dimensionesBase: BaseHormigonDimensiones;
-  verificacionesBase: BaseHormigonVerificaciones;
-  showFormulas: boolean;
+  esfuerzosBase: BaseHormigonEsfuerzos; // Contiene fuerzas y momentos actuantes
+  base: BaseHormigon; // Parámetros generales de la base (carga admisible, módulo de balasto, etc.)
+  dimensionesBase: BaseHormigonDimensiones; // Dimensiones en planta (ancho X y ancho Y)
+  verificacionesBase: BaseHormigonVerificaciones; // Resultados de todas las verificaciones previas
+  showFormulas: boolean; // Indica si se deben mostrar o no las fórmulas simbólicas
 };
 
 const FormulasVerificacionesBase: React.FC<Props> = ({
@@ -20,6 +26,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
   verificacionesBase,
   showFormulas,
 }) => {
+  // Se extraen los valores ya calculados de verificaciones
   const {
     coeficienteSeguridadVuelco,
     verificaVuelco,
@@ -37,16 +44,27 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
     verificaAsentamientoDiferencial,
   } = verificacionesBase;
 
+  // Se extraen los esfuerzos principales: carga normal y momentos
   const { normal, momentoX, momentoY } = esfuerzosBase;
+
+  // Se extraen las dimensiones en planta
   const { anchoX: b_x, anchoY: b_y } = dimensionesBase;
 
+  // Función auxiliar que arma una fracción en formato KaTeX
   const frac = (num: string, den: string) => `\\frac{${num}}{${den}}`;
 
+  // Variables donde se guardan las fórmulas simbólicas y numéricas de tensiones en X
   let symbolicTensionXMax = "";
   let substitutedTensionXMax = "";
   let symbolicTensionXMin = "";
   let substitutedTensionXMin = "";
 
+  /*
+    Determinación de tensiones en X dependiendo de la excentricidad:
+    - Si e = 0 → distribución uniforme
+    - Si e ≤ b/6 → distribución trapecial
+    - Si e > b/6 → distribución triangular (cierre en un borde)
+  */
   if (excentricidadX === 0) {
     symbolicTensionXMax = symbolicTensionXMin = `\\sigma = ${frac(
       "N",
@@ -57,15 +75,17 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
       `${b_x.toFixed(2)}\\ \\text{m} \\cdot ${b_y.toFixed(2)}\\ \\text{m}`
     )}`;
   } else if (excentricidadX <= b_x / 6) {
+    // Caso trapecial
     symbolicTensionXMax = `\\sigma_{max} = ${frac(
       "N",
       "a_x \\cdot a_y"
-    )} (1 + ${frac("6 e_x", "a_x")})`;
+    )} (1 + ${frac("6 \\cdot e_x", "a_x")})`;
     symbolicTensionXMin = `\\sigma_{min} = ${frac(
       "N",
       "a_x \\cdot a_y"
-    )} (1 - ${frac("6 e_x", "a_x")})`;
+    )} (1 - ${frac("6 \\cdot e_x", "a_x")})`;
 
+    // Sustitución numérica completa
     substitutedTensionXMax = `\\sigma_{max} = ${frac(
       `${normal.toFixed(2)}\\ \\text{kN}`,
       `${b_x.toFixed(2)}\\ \\text{m} \\cdot ${b_y.toFixed(2)}\\ \\text{m}`
@@ -82,7 +102,11 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
       `${b_x.toFixed(2)}\\ \\text{m}`
     )})`;
   } else {
-    symbolicTensionXMax = `\\sigma_{max} = ${frac("4N", "3 (a_x - 2e_x) a_y")}`;
+    // Caso triangular (tensión mínima = 0)
+    symbolicTensionXMax = `\\sigma_{max} = ${frac(
+      "4 \\cdot N",
+      "3 \\cdot (a_x - 2e_x) \\cdot a_y"
+    )}`;
     symbolicTensionXMin = `\\sigma_{min} = 0`;
 
     substitutedTensionXMax = `\\sigma_{max} = ${frac(
@@ -95,6 +119,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
     substitutedTensionXMin = `\\sigma_{min} = 0`;
   }
 
+  // Tensiones en Y (lógica idéntica a X pero en la otra dirección)
   let symbolicTensionYMax = "";
   let substitutedTensionYMax = "";
   let symbolicTensionYMin = "";
@@ -113,11 +138,11 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
     symbolicTensionYMax = `\\sigma_{max} = ${frac(
       "N",
       "a_x \\cdot a_y"
-    )} (1 + ${frac("6 e_y", "a_y")})`;
+    )} (1 + ${frac("6 \\cdot e_y", "a_y")})`;
     symbolicTensionYMin = `\\sigma_{min} = ${frac(
       "N",
       "a_x \\cdot a_y"
-    )} (1 - ${frac("6 e_y", "a_y")})`;
+    )} (1 - ${frac("6 \\cdot e_y", "a_y")})`;
 
     substitutedTensionYMax = `\\sigma_{max} = ${frac(
       `${normal.toFixed(2)}\\ \\text{kN}`,
@@ -135,7 +160,10 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
       `${b_y.toFixed(2)}\\ \\text{m}`
     )})`;
   } else {
-    symbolicTensionYMax = `\\sigma_{max} = ${frac("4N", "3 (a_y - 2e_y) a_x")}`;
+    symbolicTensionYMax = `\\sigma_{max} = ${frac(
+      "4 \\cdot N",
+      "3 \\cdot (a_y - 2e_y) \\cdot a_x"
+    )}`;
     symbolicTensionYMin = `\\sigma_{min} = 0`;
 
     substitutedTensionYMax = `\\sigma_{max} = ${frac(
@@ -153,7 +181,9 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
       <div className="verificacion-container">
         <h2 className="verificacion-title">Verificaciones de Base</h2>
 
-        {/* Vuelco */}
+        {/* Bloques de cálculo y verificación. Cada FormulaBlock muestra: título, explicación, fórmula simbólica, fórmula con valores y resultado. */}
+
+        {/* --- VUELCO --- */}
         <FormulaBlock
           title="Coeficiente de Seguridad al Vuelco"
           tooltip="Se calcula como la razón entre momento estabilizador y momento desestabilizador"
@@ -186,10 +216,10 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
-        {/* Excentricidades */}
+        {/* --- EXCENTRICIDADES --- */}
         <FormulaBlock
           title="Excentricidad en X"
-          tooltip="Excentricidad respecto al eje X"
+          tooltip="Excentricidad respecto al eje X, relación de momento y fuerza axial"
           symbolic={`e_{x} = \\frac{M_{x}}{N}`}
           substituted={`e_{x} = \\frac{${momentoX.toFixed(
             2
@@ -201,7 +231,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
 
         <FormulaBlock
           title="Excentricidad en Y"
-          tooltip="Excentricidad respecto al eje Y"
+          tooltip="Excentricidad respecto al eje Y, relación de momento y fuerza axial"
           symbolic={`e_{y} = \\frac{M_{y}}{N}`}
           substituted={`e_{y} = \\frac{${momentoY.toFixed(
             2
@@ -211,36 +241,40 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
+        {/* --- TENSIONES EN X E Y --- */}
         <FormulaBlock
           title="Tensión Máxima X"
-          tooltip="Tensión Máxima X"
+          tooltip="Tensión Máxima en eje X, determinada con diagrama trapecial o triangular según excentricidad"
           symbolic={symbolicTensionXMax}
           substituted={substitutedTensionXMax}
           result={tensionMaximaX.toFixed(2)}
           unit="kN/m²"
           showFormulas={showFormulas}
         />
+
         <FormulaBlock
           title="Tensión Mínima X"
-          tooltip="Tensión Máxima X"
+          tooltip="Tensión Mínima X, determinada con diagrama trapecial o triangular según excentricidad"
           symbolic={symbolicTensionXMin}
           substituted={substitutedTensionXMin}
           result={tensionMinimaX.toFixed(2)}
           unit="kN/m²"
           showFormulas={showFormulas}
         />
+
         <FormulaBlock
           title="Tensión Máxima Y"
-          tooltip="Tensión Máxima X"
+          tooltip="Tensión Máxima Y, determinada con diagrama trapecial o triangular según excentricidad"
           symbolic={symbolicTensionYMax}
           substituted={substitutedTensionYMax}
           result={tensionMaximaY.toFixed(2)}
           unit="kN/m²"
           showFormulas={showFormulas}
         />
+
         <FormulaBlock
           title="Tensión Mínima Y"
-          tooltip="Tensión Máxima X"
+          tooltip="Tensión Mínima Y, determinada con diagrama trapecial o triangular según excentricidad"
           symbolic={symbolicTensionYMin}
           substituted={substitutedTensionYMin}
           result={tensionMinimaY.toFixed(2)}
@@ -248,7 +282,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
-        {/* Verificación de Tensiones Admisibles - Condición 1 */}
+        {/* --- VERIFICACIONES DE TENSIONES ADMISIBLE --- */}
         <FormulaBlock
           title="Verificación de tensión Máxima X"
           tooltip="La tensión máxima en X debe ser menor o igual a 1.25·qadm"
@@ -266,7 +300,6 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
-        {/* Verificación de Tensiones Admisibles - Condición 2 */}
         <FormulaBlock
           title="Verificación de tensión Máxima Y"
           tooltip="La tensión máxima en Y debe ser menor o igual a 1.25·qadm"
@@ -284,7 +317,6 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
-        {/* Verificación de Tensiones Admisibles - Condición 3 */}
         <FormulaBlock
           title="Verificación de tensiones X"
           tooltip="El promedio de tensiones en X debe ser menor o igual a qadm"
@@ -304,7 +336,6 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
-        {/* Verificación de Tensiones Admisibles - Condición 4 */}
         <FormulaBlock
           title="Verificación de tensiones Y"
           tooltip="El promedio de tensiones en Y debe ser menor o igual a qadm"
@@ -324,7 +355,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
-        {/* Asentamientos */}
+        {/* --- ASENTAMIENTOS --- */}
         <FormulaBlock
           title="Asentamiento Medio"
           tooltip="Relación entre carga y módulo de balasto"
@@ -365,7 +396,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
 
         <FormulaBlock
           title="Asentamiento Mínimo"
-          tooltip="Incluye efectos de momentos en X e Y"
+          tooltip="Incluye efectos de momentos en X e Y. Debe ser mayor a 0"
           symbolic={`s_{min} = \\frac{1}{k} \\left( \\frac{N}{a_{x} \\cdot a_{y}} - \\frac{6 \\cdot M_{x}}{a_{x} \\cdot a_{y}^{2}} - \\frac{6 \\cdot M_{y}}{a_{y} \\cdot a_{x}^{2}} \\right)`}
           substituted={`s_{min} = \\frac{1}{${base.moduloBalasto.valor.toFixed(
             2
@@ -389,7 +420,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
 
         <FormulaBlock
           title="Verificación de Asentamiento Medio"
-          tooltip="Debe cumplirse s_med ≤ 35 mm"
+          tooltip="Debe cumplirse s medio ≤ 35 mm"
           symbolic={`s_{med} \\leq 35\\ mm`}
           substituted={`${(asentamientoMedio * 1000).toFixed(
             2
@@ -398,7 +429,7 @@ const FormulasVerificacionesBase: React.FC<Props> = ({
           showFormulas={showFormulas}
         />
 
-        {/* Distorsión Angular */}
+        {/* --- DISTORSIÓN ANGULAR --- */}
         <FormulaBlock
           title="Distorsión Angular"
           tooltip="Relación entre diferencia de asentamientos y la diagonal de la base"
