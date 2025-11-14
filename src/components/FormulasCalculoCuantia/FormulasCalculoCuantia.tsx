@@ -61,7 +61,7 @@ const FormulasCalculoCuantia: React.FC<Props> = ({
           title="Carga Mayorada"
           tooltip={`Pu: Esfuerzo mayorado<br/>ax, ay: Dimensiones`}
           symbolic="q_u = \frac{P_u}{a_x \cdot a_y}"
-          substituted={`q_u = \\frac${calculoCuantia.esfuerzoAxilMayorado.toFixed(
+          substituted={`q_u = \\frac{${calculoCuantia.esfuerzoAxilMayorado.toFixed(
             2
           )}\\ \\text{kN}}{${ax.toFixed(2)}\\ \\text{m} \\cdot ${ay.toFixed(
             2

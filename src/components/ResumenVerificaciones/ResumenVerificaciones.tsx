@@ -149,11 +149,11 @@ const ResumenVerificaciones: React.FC<Props> = ({
           result={verificaAsentamientoDiferencial ? "Sí" : "No"}
           showFormulas={showFormulas}
         />
-        {/* Verificación estructural a punzonado */}
+        {/* Verificación final Vu <= Vd */}
         <FormulaBlock
           title="Verificación a Punzonado"
-          tooltip={`Verifica que Vu ≤ V_d<br/>Si se cumple, la base resiste el punzonado`}
-          symbolic="V_u \\leq V_d"
+          tooltip={`Verifica que Vu ≤ Vd<br/>Si se cumple, la base resiste el punzonado`}
+          symbolic="V_u \leq V_d"
           substituted={`V_u = ${verificaPunzonado.resistenciaRequerida.toFixed(
             2
           )}\\ \\text{kN} \\leq ${verificaPunzonado.resistenciaDiseno.toFixed(
@@ -161,13 +161,13 @@ const ResumenVerificaciones: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaPunzonado.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
-          reference="Art. 11.12.2.2 CIRSOC 201-05. Página 287" // Referencia normativa
+          reference="Art. 11.12.2.2 CIRSOC 201-05. Página 287"
         />
-        {/* Verificación estructural a corte */}
+        {/* Verificación final: compara si las resistencias requeridas están dentro del límite de diseño */}
         <FormulaBlock
           title="Verificación a Corte"
           tooltip={`Verifica que Vux ≤ Vdx y Vuy ≤ Vdy<br/>Si ambas condiciones se cumplen, la base es segura frente al corte`}
-          symbolic="V_{ux} \\leq V_{dx}, \\quad V_{uy} \\leq V_{dy}"
+          symbolic="V_{ux} \leq V_{dx}, \quad V_{uy} \leq V_{dy}"
           substituted={`V_{ux} = ${verificaCorte.resistenciaRequeridaX.toFixed(
             2
           )}\\ \\text{kN} \\leq ${verificaCorte.resistenciaDisenoX.toFixed(
@@ -179,7 +179,7 @@ const ResumenVerificaciones: React.FC<Props> = ({
           )}\\ \\text{kN}`}
           result={verificaCorte.cumpleVerificacion ? "Sí" : "No"}
           showFormulas={showFormulas}
-          reference="Art. 11.12.2.1 CIRSOC 201-05. Página 286" // Referencia normativa
+          reference="Art. 11.12.2.1 CIRSOC 201-05. Página 286"
         />
       </div>
     </div>

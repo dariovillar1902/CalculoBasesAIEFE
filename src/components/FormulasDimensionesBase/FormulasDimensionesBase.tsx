@@ -95,9 +95,9 @@ const FormulasDimensionesBase: React.FC<Props> = ({
           title="Altura"
           tooltip="Altura mínima según vuelos: max(VueloX/5, VueloY/5, 0.25 m)"
           symbolic="h = \max(\frac{V_x}{5}, \frac{V_y}{5}, 0.25 \ m)"
-          substituted={`h = \\max\\left(\\frac${vueloX.toFixed(
+          substituted={`h = \\max\\left(\\frac{${vueloX.toFixed(
             2
-          )}\\ \\text{m}}{5}, \\frac${vueloY.toFixed(
+          )}\\ \\text{m}}{5}, \\frac{${vueloY.toFixed(
             2
           )}\\ \\text{m}}{5}, 0.25\\ \\text{m}\\right)`}
           result={altura.toFixed(2)}

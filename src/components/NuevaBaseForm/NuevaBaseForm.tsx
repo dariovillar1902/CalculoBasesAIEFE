@@ -90,7 +90,7 @@ const NuevaBaseForm: React.FC = () => {
           const { data } = await api.get<BaseHormigon>(
             `baseshormigon/${baseId}`
           );
-          const { ...rest } = data; // omite ID
+          const { id, ...rest } = data; // extrae id y guarda solo los campos editables
           setFormData(rest);
         } catch (err) {
           console.error("Error fetching base data:", err);
