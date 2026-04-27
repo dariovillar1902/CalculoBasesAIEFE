@@ -61,6 +61,8 @@ const NuevaBaseForm: React.FC = () => {
   // Toggle para mostrar u ocultar campos avanzados
 
   const [importing, setImporting] = useState(false);
+  // Evita envíos duplicados mientras la petición está en curso
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Estado visual del botón "Importar archivo"
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -143,6 +145,7 @@ const NuevaBaseForm: React.FC = () => {
   // Guardado final (POST si nueva base, PUT si edición)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       if (baseId) {
         await api.put(`baseshormigon/${baseId}`, formData);
@@ -154,6 +157,7 @@ const NuevaBaseForm: React.FC = () => {
     } catch (error) {
       console.error("Error al guardar la base:", error);
       alert("Error al guardar la base.");
+      setIsSubmitting(false);
     }
   };
 
@@ -218,8 +222,14 @@ const NuevaBaseForm: React.FC = () => {
 
           {/* Botón de submit */}
           <div className="fullWidth">
-            <button type="submit" className="submitButton">
-              Crear Base
+            <button type="submit" className="submitButton" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="submitSpinner">
+                  <span className="spinner" /> Guardando...
+                </span>
+              ) : (
+                baseId ? "Guardar cambios" : "Crear Base"
+              )}
             </button>
           </div>
         </form>
